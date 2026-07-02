@@ -1,20 +1,22 @@
-const CACHE_NAME = 'Speakr-cache-v3';
+const CACHE_NAME = 'Speakr-cache-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/static/offline.html',
   '/static/manifest.json',
   '/static/css/styles.css',
-  '/static/js/app.js',
-  '/static/img/icon-192x192.png', // Assuming you will add this
-  '/static/img/icon-512x512.png', // Assuming you will add this
-  '/static/img/favicon.ico',      // Keep existing SVG as a fallback or for other uses
-  // HTML templates (these are typically served via routes, but caching the routes themselves is handled by fetch strategies)
-  // We cache '/' which should serve the main page.
-  // Other specific page routes like /login, /register, /account will be handled by networkFirst.
-  // CDN assets - caching these can be beneficial but also complex if they change often.
-  'https://cdn.tailwindcss.com',
-  'https://unpkg.com/vue@3/dist/vue.global.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+  '/static/js/app.modular.js',
+  '/static/js/i18n.js',
+  '/static/js/csrf-refresh.js',
+  '/static/img/icon-192x192.png',
+  '/static/img/icon-512x512.png',
+  '/static/img/favicon.ico',
+  // Local vendor assets (no external CDN dependencies)
+  '/static/vendor/js/tailwind.min.js',
+  '/static/vendor/js/vue.global.js',
+  '/static/vendor/js/marked.min.js',
+  '/static/vendor/js/easymde.min.js',
+  '/static/vendor/css/fontawesome.min.css',
+  '/static/vendor/css/easymde.min.css'
 ];
 
 // Function to update shortcuts (structure from your example)
@@ -216,6 +218,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // The web app manifest must NEVER be served stale. Android/Chrome re-reads
+  // it to (re)register the PWA's share_target (and file_handlers, shortcuts,
+  // etc). Cache-first pins whatever manifest was cached at first install —
+  // e.g. one from before share_target existed — so the Android share sheet
+  // never gains "Speakr" as a target no matter how many times the manifest
+  // is updated server-side. Serve it network-first: fresh from the network,
+  // falling back to cache only when offline.
+  if (url.pathname === '/static/manifest.json') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
   // For static assets listed in ASSETS_TO_CACHE, use cache-first.
   // This ensures that if an asset path is directly requested, it's served from cache if possible.
   // We need to match against the origin + pathname for ASSETS_TO_CACHE.
@@ -258,4 +272,282 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+});
+
+// Background sync for failed uploads
+self.addEventListener('sync', (event) => {
+  console.log('[Service Worker] Background sync triggered:', event.tag);
+
+  if (event.tag === 'sync-uploads') {
+    event.waitUntil(syncFailedUploads());
+  }
+});
+
+// IndexedDB helper for failed uploads
+async function openFailedUploadsDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('SpeakrFailedUploads', 1);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains('failedUploads')) {
+        const objectStore = db.createObjectStore('failedUploads', { keyPath: 'id', autoIncrement: true });
+        objectStore.createIndex('timestamp', 'timestamp', { unique: false });
+        objectStore.createIndex('clientId', 'clientId', { unique: false });
+      }
+    };
+  });
+}
+
+// Get all failed uploads from IndexedDB
+async function getFailedUploads(db) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['failedUploads'], 'readonly');
+    const objectStore = transaction.objectStore('failedUploads');
+    const request = objectStore.getAll();
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// Delete a failed upload after successful retry
+async function deleteFailedUpload(db, id) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['failedUploads'], 'readwrite');
+    const objectStore = transaction.objectStore('failedUploads');
+    const request = objectStore.delete(id);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// Update retry count for a failed upload
+async function updateRetryCount(db, id, retryCount, error) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const transaction = db.transaction(['failedUploads'], 'readwrite');
+      const objectStore = transaction.objectStore('failedUploads');
+      const getRequest = objectStore.get(id);
+
+      getRequest.onsuccess = () => {
+        const upload = getRequest.result;
+        if (!upload) {
+          reject(new Error('Upload not found'));
+          return;
+        }
+
+        upload.retryCount = retryCount;
+        upload.lastRetry = Date.now();
+        if (error) {
+          upload.lastError = error;
+        }
+
+        const putRequest = objectStore.put(upload);
+        putRequest.onsuccess = () => resolve();
+        putRequest.onerror = () => reject(putRequest.error);
+      };
+
+      getRequest.onerror = () => reject(getRequest.error);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+// Retry uploading a failed upload
+async function retryUpload(upload) {
+  const formData = new FormData();
+
+  // Reconstruct File from ArrayBuffer
+  const file = new File([upload.fileData], upload.fileName, { type: upload.mimeType });
+  formData.append('file', file);
+
+  if (upload.notes) {
+    formData.append('notes', upload.notes);
+  }
+
+  if (upload.tags && upload.tags.length > 0) {
+    upload.tags.forEach(tag => {
+      formData.append('tags[]', JSON.stringify(tag));
+    });
+  }
+
+  if (upload.asrOptions) {
+    if (upload.asrOptions.language) {
+      formData.append('asr_language', upload.asrOptions.language);
+    }
+    if (upload.asrOptions.min_speakers) {
+      formData.append('asr_min_speakers', upload.asrOptions.min_speakers);
+    }
+    if (upload.asrOptions.max_speakers) {
+      formData.append('asr_max_speakers', upload.asrOptions.max_speakers);
+    }
+  }
+
+  // Get CSRF token from cookies
+  const csrfToken = getCookie('csrf_access_token');
+  const headers = csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {};
+
+  const response = await fetch('/upload', {
+    method: 'POST',
+    headers: headers,
+    body: formData,
+    credentials: 'same-origin'
+  });
+
+  if (!response.ok) {
+    throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// Get cookie value
+function getCookie(name) {
+  const value = `; ${self.cookies || ''}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
+// Sync failed uploads from IndexedDB
+async function syncFailedUploads() {
+  console.log('[Service Worker] Syncing failed uploads');
+
+  try {
+    const db = await openFailedUploadsDB();
+    const failedUploads = await getFailedUploads(db);
+
+    if (failedUploads.length === 0) {
+      console.log('[Service Worker] No failed uploads to retry');
+      return Promise.resolve();
+    }
+
+    console.log(`[Service Worker] Found ${failedUploads.length} failed uploads to retry`);
+
+    // Notify that sync started
+    await self.registration.showNotification('Speakr Upload Sync', {
+      body: `Retrying ${failedUploads.length} failed upload(s)...`,
+      icon: '/static/img/icon-192x192.png',
+      badge: '/static/img/icon-192x192.png',
+      tag: 'upload-sync',
+      requireInteraction: false
+    });
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const upload of failedUploads) {
+      try {
+        // Limit retries to 3 attempts
+        if (upload.retryCount >= 3) {
+          console.log(`[Service Worker] Upload ${upload.id} exceeded retry limit (${upload.retryCount})`);
+          failCount++;
+          continue;
+        }
+
+        console.log(`[Service Worker] Retrying upload ${upload.id} (attempt ${upload.retryCount + 1})`);
+
+        await retryUpload(upload);
+
+        // Success - delete from IndexedDB
+        await deleteFailedUpload(db, upload.id);
+        successCount++;
+
+        console.log(`[Service Worker] Successfully retried upload ${upload.id}`);
+      } catch (error) {
+        // Update retry count
+        await updateRetryCount(db, upload.id, upload.retryCount + 1, error.message);
+        failCount++;
+
+        console.error(`[Service Worker] Failed to retry upload ${upload.id}:`, error);
+      }
+    }
+
+    // Show final notification
+    await self.registration.showNotification('Speakr Upload Sync Complete', {
+      body: `${successCount} succeeded, ${failCount} failed`,
+      icon: '/static/img/icon-192x192.png',
+      badge: '/static/img/icon-192x192.png',
+      tag: 'upload-sync-complete',
+      requireInteraction: false
+    });
+
+    return Promise.resolve();
+  } catch (error) {
+    console.error('[Service Worker] Failed to sync uploads:', error);
+
+    await self.registration.showNotification('Speakr Upload Sync Failed', {
+      body: 'Could not sync failed uploads. Will retry later.',
+      icon: '/static/img/icon-192x192.png',
+      badge: '/static/img/icon-192x192.png',
+      tag: 'upload-sync-error',
+      requireInteraction: false
+    });
+
+    return Promise.reject(error);
+  }
+}
+
+// Push notification handler
+self.addEventListener('push', (event) => {
+  console.log('[Service Worker] Push notification received');
+
+  const options = {
+    icon: '/static/img/icon-192x192.png',
+    badge: '/static/img/icon-192x192.png',
+    vibrate: [200, 100, 200],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1
+    }
+  };
+
+  if (event.data) {
+    const data = event.data.json();
+    event.waitUntil(
+      self.registration.showNotification(data.title || 'Speakr Notification', {
+        body: data.body || 'You have a new notification',
+        ...options,
+        data: data
+      })
+    );
+  } else {
+    event.waitUntil(
+      self.registration.showNotification('Speakr Notification', {
+        body: 'You have a new notification',
+        ...options
+      })
+    );
+  }
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+  console.log('[Service Worker] Notification clicked:', event.notification.tag);
+  event.notification.close();
+
+  // Handle different notification types
+  const urlToOpen = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if there's already a window open
+        for (const client of clientList) {
+          if (client.url === urlToOpen && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // If no window is open, open a new one
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+  );
 });

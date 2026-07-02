@@ -1,0 +1,530 @@
+/**
+ * Recording management composable
+ * Handles loading, selecting, filtering, and managing recordings
+ */
+
+import * as IncognitoStorage from '../db/incognito-storage.js';
+
+export function useRecordings(state, utils, reprocessComposable) {
+    const {
+        recordings, selectedRecording, isLoadingRecordings, isLoadingMore,
+        currentPage, perPage, totalRecordings, totalPages, hasNextPage, hasPrevPage,
+        showSharedWithMe, showArchivedRecordings, searchQuery, searchDebounceTimer,
+        filterTags, filterSpeakers, filterDatePreset, filterDateRange, filterTextQuery,
+        filterStarred, filterInbox, filterFolder, sortBy,
+        availableTags, availableSpeakers, availableFolders, selectedTagIds, uploadLanguage, uploadMinSpeakers, uploadMaxSpeakers, uploadHotwords, uploadInitialPrompt,
+        useAsrEndpoint, connectorSupportsDiarization, globalError, uploadQueue, isProcessingActive, currentView, showUploadModal, uploadDeepLinkPending,
+        isMobileScreen, isSidebarCollapsed, isRecording, audioBlobURL,
+        speakerColorMap,
+        // Incognito mode
+        incognitoRecording
+    } = state;
+
+    const { setGlobalError, showToast } = utils;
+
+    // Load recordings from API
+    const loadRecordings = async (page = 1, append = false, searchQueryParam = '') => {
+        globalError.value = null;
+        if (!append) {
+            isLoadingRecordings.value = true;
+        } else {
+            isLoadingMore.value = true;
+        }
+
+        try {
+            const endpoint = '/api/recordings';
+
+            const params = new URLSearchParams({
+                page: page.toString(),
+                per_page: perPage.value.toString()
+            });
+
+            if (searchQueryParam.trim()) {
+                params.set('q', searchQueryParam.trim());
+            }
+
+            // Add sort parameter
+            if (sortBy.value) {
+                params.set('sort_by', sortBy.value);
+            }
+
+            // Add archived/shared/starred/inbox filters as query params (ANDed with other filters)
+            if (showArchivedRecordings.value) {
+                params.set('archived', 'true');
+            }
+            if (showSharedWithMe.value) {
+                params.set('shared', 'true');
+            }
+            if (filterStarred.value) {
+                params.set('starred', 'true');
+            }
+            if (filterInbox.value) {
+                params.set('inbox', 'true');
+            }
+
+            // Add folder filter
+            if (filterFolder && filterFolder.value) {
+                params.set('folder', filterFolder.value);
+            }
+
+            const response = await fetch(`${endpoint}?${params}`);
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to load recordings');
+
+            const recordingsList = data.recordings;
+            const pagination = data.pagination;
+
+            if (!Array.isArray(recordingsList)) {
+                console.error('Unexpected response format:', data);
+                throw new Error('Invalid response format from server');
+            }
+
+            if (pagination) {
+                currentPage.value = pagination.page;
+                totalRecordings.value = pagination.total;
+                totalPages.value = pagination.total_pages;
+                hasNextPage.value = pagination.has_next;
+                hasPrevPage.value = pagination.has_prev;
+            } else {
+                currentPage.value = 1;
+                totalRecordings.value = recordingsList.length;
+                totalPages.value = 1;
+                hasNextPage.value = false;
+                hasPrevPage.value = false;
+            }
+
+            if (append) {
+                recordings.value = [...recordings.value, ...recordingsList];
+            } else {
+                recordings.value = recordingsList;
+                const lastRecordingId = localStorage.getItem('lastSelectedRecordingId');
+                if (lastRecordingId && recordingsList.length > 0) {
+                    const recordingToSelect = recordingsList.find(r => r.id == lastRecordingId);
+                    if (recordingToSelect) {
+                        selectRecording(recordingToSelect);
+                    }
+                }
+            }
+
+            // NOTE: Removed auto-queueing of incomplete recordings.
+            // Backend processing recordings are now shown via backendProcessingRecordings
+            // computed property, which filters recordings by status (PENDING, PROCESSING, etc.)
+            // The job queue system (ProcessingJob) handles background processing.
+
+        } catch (error) {
+            console.error('Load Recordings Error:', error);
+            setGlobalError(`Failed to load recordings: ${error.message}`);
+            if (!append) {
+                recordings.value = [];
+            }
+        } finally {
+            isLoadingRecordings.value = false;
+            isLoadingMore.value = false;
+        }
+    };
+
+    const loadMoreRecordings = async () => {
+        if (!hasNextPage.value || isLoadingMore.value) return;
+        await loadRecordings(currentPage.value + 1, true, searchQuery.value);
+    };
+
+    const performSearch = async (query = '') => {
+        currentPage.value = 1;
+        await loadRecordings(1, false, query);
+    };
+
+    const debouncedSearch = (query) => {
+        if (searchDebounceTimer.value) {
+            clearTimeout(searchDebounceTimer.value);
+        }
+        searchDebounceTimer.value = setTimeout(() => {
+            performSearch(query);
+        }, 300);
+    };
+
+    const loadTags = async () => {
+        try {
+            const response = await fetch('/api/tags');
+            if (response.ok) {
+                availableTags.value = await response.json();
+            } else {
+                availableTags.value = [];
+            }
+        } catch (error) {
+            console.warn('Error loading tags:', error);
+            availableTags.value = [];
+        }
+    };
+
+    const loadFolders = async () => {
+        try {
+            const response = await fetch('/api/folders');
+            if (response.ok) {
+                availableFolders.value = await response.json();
+            } else {
+                availableFolders.value = [];
+            }
+        } catch (error) {
+            console.warn('Error loading folders:', error);
+            availableFolders.value = [];
+        }
+    };
+
+    const loadSpeakers = async () => {
+        try {
+            const response = await fetch('/speakers');
+            if (response.ok) {
+                availableSpeakers.value = await response.json();
+            } else {
+                availableSpeakers.value = [];
+            }
+        } catch (error) {
+            console.warn('Error loading speakers:', error);
+            availableSpeakers.value = [];
+        }
+    };
+
+    const selectRecording = async (recording) => {
+        if (hasUnsavedRecording()) {
+            if (!confirm('You have an unsaved recording. Are you sure you want to leave?')) {
+                return;
+            }
+            // User chose to leave → actually discard the unsaved/recovered
+            // recording so the guard doesn't keep firing on every subsequent
+            // navigation (clears the blob, aborts any server session, clears
+            // IndexedDB).
+            if (utils.discardActiveRecording) {
+                try { await utils.discardActiveRecording(); } catch (_) { /* non-fatal */ }
+            }
+        }
+
+        // Check if switching away from incognito recording to a regular recording
+        if (incognitoRecording && incognitoRecording.value &&
+            selectedRecording.value?.id === 'incognito' &&
+            recording?.id !== 'incognito') {
+            if (!confirm('Switching to another recording will discard your incognito recording. Continue?')) {
+                return;
+            }
+            // Clear incognito recording immediately - this is the "incognito" promise
+            IncognitoStorage.clearIncognitoRecording();
+            incognitoRecording.value = null;
+        }
+
+        // Also clear any orphaned incognito data when selecting a non-incognito recording
+        // This handles edge cases like page refresh where the above check doesn't trigger
+        if (recording?.id !== 'incognito' && IncognitoStorage.hasIncognitoRecording()) {
+            console.log('[Incognito] Clearing orphaned incognito data');
+            IncognitoStorage.clearIncognitoRecording();
+            if (incognitoRecording) {
+                incognitoRecording.value = null;
+            }
+        }
+
+        // Reset modal audio state when switching recordings
+        if (utils.resetModalAudioState) {
+            utils.resetModalAudioState();
+        }
+
+        // Clear speaker color map when switching recordings - new colors will be assigned on first render
+        if (speakerColorMap) {
+            speakerColorMap.value = {};
+        }
+
+        // Tell the hydration safety-net watcher that this path already fetches
+        // the full detail below, so it doesn't also fetch (avoids a double
+        // request on every normal selection). Set BEFORE the assignment so the
+        // watcher, which fires on the next tick, sees the flag.
+        if (recording && recording.id && utils) utils._hydratingSelectedRecording = true;
+        selectedRecording.value = recording;
+
+        if (recording && recording.id) {
+            localStorage.setItem('lastSelectedRecordingId', recording.id);
+
+            try {
+                const response = await fetch(`/api/recordings/${recording.id}`);
+                if (response.ok) {
+                    const fullRecording = await response.json();
+                    selectedRecording.value = fullRecording;
+
+                    const index = recordings.value.findIndex(r => r.id === recording.id);
+                    if (index !== -1) {
+                        recordings.value[index] = fullRecording;
+                    }
+
+                    // Auto-start polling if recording is still processing or summarizing
+                    if (['PROCESSING', 'SUMMARIZING'].includes(fullRecording.status)) {
+                        console.log(`[AUTO-POLL] Recording ${fullRecording.id} is in ${fullRecording.status} state, starting auto-polling`);
+                        if (reprocessComposable && reprocessComposable.startReprocessingPoll) {
+                            reprocessComposable.startReprocessingPoll(fullRecording.id);
+                        } else {
+                            console.warn('[AUTO-POLL] reprocessComposable.startReprocessingPoll not available');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading full recording:', error);
+            } finally {
+                if (utils) utils._hydratingSelectedRecording = false;
+            }
+        }
+
+        if (isMobileScreen.value) {
+            isSidebarCollapsed.value = true;
+        }
+
+        currentView.value = 'detail';
+        // If the upload modal happened to be open, dismiss it so the
+        // user's click on a recording resolves to the detail view
+        // without a competing overlay. EXCEPTION: when arriving via the
+        // ?upload=1 deep-link, the last recording is auto-selected behind
+        // the upload modal on mount — this first selectRecording must NOT
+        // close it. Consume the one-shot flag so subsequent selections
+        // behave normally.
+        if (uploadDeepLinkPending && uploadDeepLinkPending.value) {
+            uploadDeepLinkPending.value = false;
+        } else {
+            showUploadModal.value = false;
+        }
+
+        if (isRecording.value) {
+            // Don't interrupt recording
+        }
+        if (audioBlobURL.value) {
+            // Don't discard recorded audio
+        }
+    };
+
+    // Select a recording by ID, used by the /recordings/<id> deep link (#301).
+    // Resolves from the loaded list when possible, otherwise fetches it so the
+    // target works even when it isn't on the current page or is a shared one.
+    // Returns true if the recording was found and selected.
+    const selectRecordingById = async (id) => {
+        if (id == null) return false;
+        const existing = recordings.value.find(r => String(r.id) === String(id));
+        if (existing) {
+            await selectRecording(existing);
+            return true;
+        }
+        try {
+            const resp = await fetch(`/api/recordings/${id}`);
+            if (resp.ok) {
+                await selectRecording(await resp.json());
+                return true;
+            }
+        } catch (_) { /* unknown / inaccessible id — stay on the list */ }
+        return false;
+    };
+
+    const hasUnsavedRecording = () => {
+        return isRecording.value || audioBlobURL.value;
+    };
+
+    const toggleInbox = async (recording) => {
+        if (!recording || !recording.id) return;
+
+        try {
+            const response = await fetch(`/recording/${recording.id}/toggle_inbox`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to toggle inbox status');
+
+            // Update the recording in the UI
+            recording.is_inbox = data.is_inbox;
+
+            // Update in the recordings list
+            const index = recordings.value.findIndex(r => r.id === recording.id);
+            if (index !== -1) {
+                recordings.value[index].is_inbox = data.is_inbox;
+            }
+
+            showToast(`Recording ${data.is_inbox ? 'moved to inbox' : 'marked as read'}`);
+        } catch (error) {
+            console.error('Toggle Inbox Error:', error);
+            setGlobalError(`Failed to toggle inbox status: ${error.message}`);
+        }
+    };
+
+    const toggleHighlight = async (recording) => {
+        if (!recording || !recording.id) return;
+
+        try {
+            const response = await fetch(`/recording/${recording.id}/toggle_highlight`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to toggle highlighted status');
+
+            // Update the recording in the UI
+            recording.is_highlighted = data.is_highlighted;
+
+            // Update in the recordings list
+            const index = recordings.value.findIndex(r => r.id === recording.id);
+            if (index !== -1) {
+                recordings.value[index].is_highlighted = data.is_highlighted;
+            }
+
+            showToast(`Recording ${data.is_highlighted ? 'highlighted' : 'unhighlighted'}`);
+        } catch (error) {
+            console.error('Toggle Highlight Error:', error);
+            setGlobalError(`Failed to toggle highlighted status: ${error.message}`);
+        }
+    };
+
+    const getRecordingTags = (recording) => {
+        if (!recording || !recording.tags) return [];
+        return recording.tags || [];
+    };
+
+    const getAvailableTagsForRecording = (recording) => {
+        if (!recording || !availableTags.value) return [];
+        const recordingTagIds = getRecordingTags(recording).map(tag => tag.id);
+        return availableTags.value.filter(tag => !recordingTagIds.includes(tag.id));
+    };
+
+    const filterByTag = (tag) => {
+        filterTags.value = [tag.id];
+        applyAdvancedFilters();
+    };
+
+    const buildSearchQuery = () => {
+        let query = [];
+
+        if (filterTextQuery.value.trim()) {
+            query.push(filterTextQuery.value.trim());
+        }
+
+        if (filterTags.value.length > 0) {
+            const tagNames = filterTags.value.map(tagId => {
+                const tag = availableTags.value.find(t => t.id === tagId);
+                return tag ? `tag:${tag.name.replace(/\s+/g, '_')}` : '';
+            }).filter(Boolean);
+            query.push(...tagNames);
+        }
+
+        if (filterSpeakers.value.length > 0) {
+            const speakerNames = filterSpeakers.value.map(name =>
+                `speaker:${name.replace(/\s+/g, '_')}`
+            );
+            query.push(...speakerNames);
+        }
+
+        if (filterDatePreset.value) {
+            query.push(`date:${filterDatePreset.value}`);
+        } else if (filterDateRange.value.start || filterDateRange.value.end) {
+            if (filterDateRange.value.start) {
+                query.push(`date_from:${filterDateRange.value.start}`);
+            }
+            if (filterDateRange.value.end) {
+                query.push(`date_to:${filterDateRange.value.end}`);
+            }
+        }
+
+        return query.join(' ');
+    };
+
+    const applyAdvancedFilters = () => {
+        searchQuery.value = buildSearchQuery();
+    };
+
+    const clearAllFilters = () => {
+        filterTags.value = [];
+        filterSpeakers.value = [];
+        filterDateRange.value = { start: '', end: '' };
+        filterDatePreset.value = '';
+        filterTextQuery.value = '';
+        filterStarred.value = false;
+        filterInbox.value = false;
+        // Note: filterFolder is NOT cleared here - it's a navigation element, not a filter
+        searchQuery.value = '';
+    };
+
+    const clearTagFilter = () => {
+        searchQuery.value = '';
+        clearAllFilters();
+    };
+
+    const addTagToSelection = (tagId) => {
+        if (!selectedTagIds.value.includes(tagId)) {
+            selectedTagIds.value.push(tagId);
+            applyTagDefaults();
+        }
+    };
+
+    const removeTagFromSelection = (tagId) => {
+        const index = selectedTagIds.value.indexOf(tagId);
+        if (index > -1) {
+            selectedTagIds.value.splice(index, 1);
+            applyTagDefaults();
+        }
+    };
+
+    const applyTagDefaults = () => {
+        const selectedTags = selectedTagIds.value.map(tagId =>
+            availableTags.value.find(tag => tag.id == tagId)
+        ).filter(Boolean);
+
+        const firstTag = selectedTags[0];
+        if (firstTag && connectorSupportsDiarization.value) {
+            if (firstTag.default_language) {
+                uploadLanguage.value = firstTag.default_language;
+            }
+            if (firstTag.default_min_speakers) {
+                uploadMinSpeakers.value = firstTag.default_min_speakers;
+            }
+            if (firstTag.default_max_speakers) {
+                uploadMaxSpeakers.value = firstTag.default_max_speakers;
+            }
+        }
+        if (firstTag) {
+            if (firstTag.default_hotwords) {
+                uploadHotwords.value = firstTag.default_hotwords;
+            }
+            if (firstTag.default_initial_prompt) {
+                uploadInitialPrompt.value = firstTag.default_initial_prompt;
+            }
+        }
+    };
+
+    const pollInboxRecordings = async () => {
+        try {
+            const response = await fetch('/api/recordings/inbox-count');
+            if (response.ok) {
+                const data = await response.json();
+                // Update inbox count in UI if needed
+            }
+        } catch (error) {
+            // Silent fail for polling
+        }
+    };
+
+    return {
+        loadRecordings,
+        loadMoreRecordings,
+        performSearch,
+        debouncedSearch,
+        loadTags,
+        loadFolders,
+        loadSpeakers,
+        selectRecording,
+        selectRecordingById,
+        hasUnsavedRecording,
+        toggleInbox,
+        toggleHighlight,
+        getRecordingTags,
+        getAvailableTagsForRecording,
+        filterByTag,
+        buildSearchQuery,
+        applyAdvancedFilters,
+        clearAllFilters,
+        clearTagFilter,
+        addTagToSelection,
+        removeTagFromSelection,
+        applyTagDefaults,
+        pollInboxRecordings
+    };
+}

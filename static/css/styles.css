@@ -9,22 +9,22 @@ body.unloaded {
 
 /* Color Scheme CSS Variables */
 :root {
-    /* Default Light Theme (Blue) */
-    --bg-primary: #f3f4f6; /* gray-100 */
-    --bg-secondary: #ffffff; /* white */
-    --bg-tertiary: #f9fafb; /* gray-50 */
-    --bg-accent: #dbeafe; /* blue-100 */
-    --bg-accent-hover: #bfdbfe; /* blue-200 */
+    /* Default Light Theme (Blue) - More muted with better contrast */
+    --bg-primary: #e8eaed; /* muted gray */
+    --bg-secondary: #f8f9fa; /* off-white */
+    --bg-tertiary: #f0f2f4; /* light gray */
+    --bg-accent: #c3d9f7; /* muted blue */
+    --bg-accent-hover: #aec9f2; /* deeper muted blue */
     --bg-button: #2563eb; /* blue-600 */
     --bg-button-hover: #1d4ed8; /* blue-700 */
     --bg-danger: #dc2626; /* red-600 */
     --bg-danger-hover: #b91c1c; /* red-700 */
-    --bg-danger-light: #fee2e2; /* red-100 */
-    --bg-info-light: #dbeafe; /* blue-100 */
-    --bg-warn-light: #e0f2fe; /* cyan-50 - soft, friendly light blue */
-    --bg-success-light: #d1fae5; /* green-100 */
-    --bg-pending-light: #f5f5f4; /* stone-100 */
-    --bg-input: #ffffff; /* white */
+    --bg-danger-light: #fce4e4; /* muted red */
+    --bg-info-light: #c3d9f7; /* muted blue */
+    --bg-warn-light: #d4e8f5; /* soft blue */
+    --bg-success-light: #c6f0dc; /* muted green */
+    --bg-pending-light: #eeeeec; /* stone */
+    --bg-input: #fafbfc; /* slightly gray white */
     --bg-audio-player: var(--bg-tertiary);
 
     --text-primary: #1f2937; /* gray-800 */
@@ -58,92 +58,92 @@ body.unloaded {
 
 /* Light Theme Variants */
 .theme-light-emerald {
-    --bg-primary: #f6fdf8; /* soft green-tinted background */
-    --bg-secondary: #f9fefb; /* very light green */
-    --bg-tertiary: #f1fcf3; /* noticeable but soft green tint */
-    --bg-accent: #ecfaf0; /* light green accent */
-    --bg-accent-hover: #e6f7ea; /* slightly deeper green */
+    --bg-primary: #e6f0e9; /* muted green-gray */
+    --bg-secondary: #f4f9f5; /* soft off-white green */
+    --bg-tertiary: #ebf4ed; /* light muted green */
+    --bg-accent: #d0e8d7; /* muted pastel green */
+    --bg-accent-hover: #c1e0ca; /* deeper muted green */
     --bg-button: #059669; /* keep button visible */
     --bg-button-hover: #047857; /* keep button visible */
-    --bg-input: #ffffff; /* white input background */
+    --bg-input: #f9fcfa; /* slightly green white */
     --text-accent: #047857; /* keep accent text visible */
-    --border-primary: #e8f5eb; /* light green border */
-    --border-secondary: #d1f2d8; /* soft green border */
-    --border-accent: #b8e6c1; /* medium green border */
+    --border-primary: #d4e5d8; /* muted green border */
+    --border-secondary: #c2dcc9; /* soft green border */
+    --border-accent: #a8d0b3; /* medium green border */
     --border-focus: #10b981; /* keep focus visible */
-    --ring-focus: #e6f7ea; /* soft green ring */
+    --ring-focus: #d0e8d7; /* muted green ring */
     --bg-audio-player: var(--bg-tertiary);
 }
 
 .theme-light-purple {
-    --bg-primary: #faf8ff; /* soft purple-tinted background */
-    --bg-secondary: #fcfaff; /* very light purple */
-    --bg-tertiary: #f5f2ff; /* noticeable but soft purple tint */
-    --bg-accent: #f0ebff; /* light purple accent */
-    --bg-accent-hover: #ebe4ff; /* slightly deeper purple */
+    --bg-primary: #ebe9f0; /* muted purple-gray */
+    --bg-secondary: #f7f6f9; /* soft off-white purple */
+    --bg-tertiary: #f0eef4; /* light muted purple */
+    --bg-accent: #dcd7e8; /* muted pastel purple */
+    --bg-accent-hover: #d0c9df; /* deeper muted purple */
     --bg-button: #7c3aed; /* keep button visible */
     --bg-button-hover: #6d28d9; /* keep button visible */
-    --bg-input: #ffffff; /* white input background */
+    --bg-input: #faf9fc; /* slightly purple white */
     --text-accent: #6d28d9; /* keep accent text visible */
-    --border-primary: #ede9fe; /* light purple border */
-    --border-secondary: #ddd6fe; /* soft purple border */
-    --border-accent: #c4b5fd; /* medium purple border */
+    --border-primary: #dbd6e6; /* muted purple border */
+    --border-secondary: #cfc8dd; /* soft purple border */
+    --border-accent: #bab0d2; /* medium purple border */
     --border-focus: #8b5cf6; /* keep focus visible */
-    --ring-focus: #ebe4ff; /* soft purple ring */
+    --ring-focus: #dcd7e8; /* muted purple ring */
     --bg-audio-player: var(--bg-tertiary);
 }
 
 .theme-light-rose {
-    --bg-primary: #fdf8fb; /* soft rose-tinted background */
-    --bg-secondary: #fefafc; /* very light rose */
-    --bg-tertiary: #fcf2f6; /* noticeable but soft rose tint */
-    --bg-accent: #faebf1; /* light rose accent */
-    --bg-accent-hover: #f7e4ec; /* slightly deeper rose */
+    --bg-primary: #f0e9ed; /* muted rose-gray */
+    --bg-secondary: #f9f6f7; /* soft off-white rose */
+    --bg-tertiary: #f4eef1; /* light muted rose */
+    --bg-accent: #e6d7df; /* muted pastel rose */
+    --bg-accent-hover: #dfc9d4; /* deeper muted rose */
     --bg-button: #e11d48; /* keep button visible */
     --bg-button-hover: #be185d; /* keep button visible */
-    --bg-input: #ffffff; /* white input background */
+    --bg-input: #fcf9fa; /* slightly rose white */
     --text-accent: #be185d; /* keep accent text visible */
-    --border-primary: #fce7f3; /* light rose border */
-    --border-secondary: #f9d2e4; /* soft rose border */
-    --border-accent: #f3a8c7; /* medium rose border */
+    --border-primary: #e5d6de; /* muted rose border */
+    --border-secondary: #dbc8d2; /* soft rose border */
+    --border-accent: #d0b0bf; /* medium rose border */
     --border-focus: #ec4899; /* keep focus visible */
-    --ring-focus: #f7e4ec; /* soft rose ring */
+    --ring-focus: #e6d7df; /* muted rose ring */
     --bg-audio-player: var(--bg-tertiary);
 }
 
 .theme-light-amber {
-    --bg-primary: #fdfaf6; /* soft amber-tinted background */
-    --bg-secondary: #fefcf9; /* very light amber */
-    --bg-tertiary: #fcf6f1; /* noticeable but soft amber tint */
-    --bg-accent: #faf0e6; /* light amber accent */
-    --bg-accent-hover: #f7e9db; /* slightly deeper amber */
+    --bg-primary: #efebe6; /* muted amber-gray */
+    --bg-secondary: #f9f7f4; /* soft off-white amber */
+    --bg-tertiary: #f3efe9; /* light muted amber */
+    --bg-accent: #e5ddd1; /* muted pastel amber */
+    --bg-accent-hover: #ddd2c2; /* deeper muted amber */
     --bg-button: #d97706; /* keep button visible */
     --bg-button-hover: #b45309; /* keep button visible */
-    --bg-input: #ffffff; /* white input background */
+    --bg-input: #fbfaf8; /* slightly amber white */
     --text-accent: #b45309; /* keep accent text visible */
-    --border-primary: #fef3c7; /* light amber border */
-    --border-secondary: #fde68a; /* soft amber border */
-    --border-accent: #fcd34d; /* medium amber border */
+    --border-primary: #e2dace; /* muted amber border */
+    --border-secondary: #d9cdb9; /* soft amber border */
+    --border-accent: #cdbca1; /* medium amber border */
     --border-focus: #f59e0b; /* keep focus visible */
-    --ring-focus: #f7e9db; /* soft amber ring */
+    --ring-focus: #e5ddd1; /* muted amber ring */
     --bg-audio-player: var(--bg-tertiary);
 }
 
 .theme-light-teal {
-    --bg-primary: #f6fdfc; /* soft teal-tinted background */
-    --bg-secondary: #f9fefe; /* very light teal */
-    --bg-tertiary: #f1fcfa; /* noticeable but soft teal tint */
-    --bg-accent: #ecfbf8; /* light teal accent */
-    --bg-accent-hover: #e6f9f5; /* slightly deeper teal */
+    --bg-primary: #e7f0ef; /* muted teal-gray */
+    --bg-secondary: #f5f9f8; /* soft off-white teal */
+    --bg-tertiary: #ecf4f3; /* light muted teal */
+    --bg-accent: #d2e5e2; /* muted pastel teal */
+    --bg-accent-hover: #c3ddd9; /* deeper muted teal */
     --bg-button: #0d9488; /* keep button visible */
     --bg-button-hover: #0f766e; /* keep button visible */
-    --bg-input: #ffffff; /* white input background */
+    --bg-input: #f9fcfb; /* slightly teal white */
     --text-accent: #0f766e; /* keep accent text visible */
-    --border-primary: #ccfbf1; /* light teal border */
-    --border-secondary: #99f6e4; /* soft teal border */
-    --border-accent: #5eead4; /* medium teal border */
+    --border-primary: #c8dfdc; /* muted teal border */
+    --border-secondary: #b5d3ce; /* soft teal border */
+    --border-accent: #9cc5be; /* medium teal border */
     --border-focus: #14b8a6; /* keep focus visible */
-    --ring-focus: #e6f9f5; /* soft teal ring */
+    --ring-focus: #d2e5e2; /* muted teal ring */
     --bg-audio-player: var(--bg-tertiary);
 }
 
@@ -168,8 +168,8 @@ body.unloaded {
 
     --text-primary: #f3f4f6; /* gray-100 */
     --text-secondary: #d1d5db; /* gray-300 */
-    --text-muted: #9ca3af; /* gray-400 */
-    --text-light: #6b7280; /* gray-500 */
+    --text-muted: #cbd5e1; /* slate-300 - improved contrast */
+    --text-light: #94a3b8; /* slate-400 - better visibility */
     --text-accent: #60a5fa; /* blue-400 */
     --text-button: #ffffff; /* white */
     --text-danger: #f87171; /* red-400 */
@@ -179,8 +179,8 @@ body.unloaded {
     --text-success-strong: #6ee7b7; /* green-300 */
     --text-pending-strong: #d6d3d1; /* stone-300 */
 
-    --border-primary: #374151; /* gray-700 */
-    --border-secondary: #4b5563; /* gray-600 */
+    --border-primary: #475569; /* slate-600 - more visible */
+    --border-secondary: #64748b; /* slate-500 - better contrast */
     --border-accent: #1d4ed8; /* blue-700 */
     --border-danger: #ef4444; /* red-500 */
     --border-focus: #3b82f6; /* blue-500 */
@@ -379,17 +379,42 @@ body {
         min-height: 4000px !important; /* Fixed viewport height for mobile */
     }
 }
-#app { 
-    min-height: 100%; /* Full viewport height */
-    display: flex; 
+#app {
+    /* Size off the VISIBLE viewport (--app-height is set by the keyboard-safe
+       script in the page head) so the on-screen keyboard can't push content
+       off-screen — it shrinks the visual viewport but not the layout viewport.
+       Progressive fallback: 100vh (universal) -> var(--app-height, 100dvh). */
+    height: 100vh;
+    height: var(--app-height, 100dvh);
+    display: flex;
     flex-direction: column;
 }
-main { 
-    flex: 1; 
+main {
+    flex: 1;
+    min-height: 0; /* allow the flex child to shrink so overflow-y actually scrolls */
     position: relative;
     display: flex;
     flex-direction: column;
     overflow-y: auto; /* Allow scrolling on main */
+}
+
+/* Inquire-mode page uses a separate Vue root; same keyboard-safe sizing so the
+   chat input never gets pushed under the on-screen keyboard. */
+#inquire-app {
+    height: 100vh;
+    height: var(--app-height, 100dvh);
+}
+
+/* When a text field is focused (keyboard up, .keyboard-open set on <html> by
+   the head script), hide the mobile audio player + bottom tab nav. They're not
+   useful while typing and would only steal the limited space above the
+   keyboard; the chat input + content take that space instead. Mobile only —
+   these elements don't render on desktop anyway. */
+@media (max-width: 1023px) {
+    html.keyboard-open [data-mobile-player],
+    html.keyboard-open [data-mobile-bottom-nav] {
+        display: none !important;
+    }
 }
 
 /* Sidebar styles with flexible height */
@@ -429,20 +454,22 @@ main {
 }
 .summary-box,
 .notes-box {
-    flex: 1; /* Take up available space in content-box */
-    min-height: 0; /* Critical for flex shrinking */
-    max-height: 100%; /* Prevent expansion beyond parent */
-    overflow-y: auto; /* Enable scrolling */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    /* Keep existing styling */
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    min-width: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
     background-color: var(--bg-tertiary);
     padding: 1rem;
     border-radius: 0.75rem;
     border: 1px solid var(--border-primary);
-    /* Fix scrollbar clipping rounded corners */
     scrollbar-gutter: stable;
     color: var(--text-secondary);
     box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .transcription-box {
@@ -632,6 +659,25 @@ div[v-if="!editingNotes"] {
     align-items: center;
     justify-content: center;
  }
+
+ /* Desktop only: match height of toggle buttons when icon-only */
+ @media (min-width: 1024px) {
+    #leftMainColumn .view-mode-toggle {
+        height: 1.75rem;
+    }
+    #leftMainColumn .toggle-button {
+        height: 1.75rem;
+        padding-top: 0;
+        padding-bottom: 0;
+        line-height: 1;
+    }
+    #leftMainColumn .copy-btn {
+        height: 1.75rem;
+        padding-top: 0;
+        padding-bottom: 0;
+        line-height: 1;
+    }
+ }
  
  .copy-btn:hover {
      background-color: var(--bg-accent-hover);
@@ -652,11 +698,13 @@ div[v-if="!editingNotes"] {
  /* Hover edit button styles */
 .content-box {
     position: relative;
-    height: 100%; /* Fill the available flex space */
-    min-height: 0; /* Allow shrinking */
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Prevent overflow from affecting parent layout */
+    overflow: hidden;
 }
  
  .hover-edit-btn {
@@ -741,6 +789,7 @@ div[v-if="!editingNotes"] {
      border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
      padding: 0.875rem 1rem;
      border: 1px solid var(--border-secondary);
+     overflow-x: auto; /* Enable horizontal scrolling for wide content like tables */
  }
 
  
@@ -760,25 +809,39 @@ div[v-if="!editingNotes"] {
  .ai-message h1, .summary-box h1, .notes-box h1 { font-size: 1.25rem; }
  .ai-message h2, .summary-box h2, .notes-box h2 { font-size: 1.15rem; }
  .ai-message h3, .summary-box h3, .notes-box h3 { font-size: 1.05rem; }
- 
+
  .ai-message p, .summary-box p, .notes-box p {
      margin-bottom: 0.75rem;
  }
- 
+
  .ai-message ul, .ai-message ol,
  .summary-box ul, .summary-box ol,
  .notes-box ul, .notes-box ol {
      margin-left: 1.5rem;
+     margin-right: 0.5rem;
      margin-bottom: 0.75rem;
-     list-style-position: outside; /* Ensures bullets are outside the text flow */
+     padding-right: 0.5rem;
+     list-style-position: outside;
+     display: block;
+     width: auto;
+     max-width: calc(100% - 2rem);
+     box-sizing: border-box;
+     overflow-wrap: break-word;
+     word-break: break-word;
  }
  
  .ai-message ul, .summary-box ul, .notes-box ul { list-style-type: disc; }
  .ai-message ol, .summary-box ol, .notes-box ol { list-style-type: decimal; }
 
  .ai-message li, .summary-box li, .notes-box li {
-    display: list-item; /* Ensure li elements are treated as list items */
-    margin-bottom: 0.25rem; /* Add some space between list items */
+    display: list-item;
+    margin-bottom: 0.25rem;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+    hyphens: auto;
  }
  
  .ai-message code, .summary-box code, .notes-box code {
@@ -814,6 +877,13 @@ div[v-if="!editingNotes"] {
      overflow-wrap: break-word;
  }
  
+ /* Wrap tables in scrollable container */
+ .summary-box > table, .notes-box > table {
+     display: block;
+     width: 100%;
+     overflow-x: auto;
+ }
+
  .ai-message table, .summary-box table, .notes-box table {
      border-collapse: collapse;
      width: 100%;
@@ -1104,6 +1174,54 @@ body {
     box-shadow: 0 0 8px rgba(239, 235, 233, 0.6), 0 0 12px rgba(93, 64, 55, 0.2);
 }
 
+.speaker-highlight.speaker-color-9 {
+    background-color: #E8EAF6;
+    color: #283593;
+    box-shadow: 0 0 8px rgba(232, 234, 246, 0.6), 0 0 12px rgba(40, 53, 147, 0.2);
+}
+
+.speaker-highlight.speaker-color-10 {
+    background-color: #F1F8E9;
+    color: #558B2F;
+    box-shadow: 0 0 8px rgba(241, 248, 233, 0.6), 0 0 12px rgba(85, 139, 47, 0.2);
+}
+
+.speaker-highlight.speaker-color-11 {
+    background-color: #FFEBEE;
+    color: #C62828;
+    box-shadow: 0 0 8px rgba(255, 235, 238, 0.6), 0 0 12px rgba(198, 40, 40, 0.2);
+}
+
+.speaker-highlight.speaker-color-12 {
+    background-color: #ECEFF1;
+    color: #37474F;
+    box-shadow: 0 0 8px rgba(236, 239, 241, 0.6), 0 0 12px rgba(55, 71, 79, 0.2);
+}
+
+.speaker-highlight.speaker-color-13 {
+    background-color: #FFF8E1;
+    color: #FF8F00;
+    box-shadow: 0 0 8px rgba(255, 248, 225, 0.6), 0 0 12px rgba(255, 143, 0, 0.2);
+}
+
+.speaker-highlight.speaker-color-14 {
+    background-color: #EDE7F6;
+    color: #4527A0;
+    box-shadow: 0 0 8px rgba(237, 231, 246, 0.6), 0 0 12px rgba(69, 39, 160, 0.2);
+}
+
+.speaker-highlight.speaker-color-15 {
+    background-color: #E0F2F1;
+    color: #00695C;
+    box-shadow: 0 0 8px rgba(224, 242, 241, 0.6), 0 0 12px rgba(0, 105, 92, 0.2);
+}
+
+.speaker-highlight.speaker-color-16 {
+    background-color: #FBE9E7;
+    color: #BF360C;
+    box-shadow: 0 0 8px rgba(251, 233, 231, 0.6), 0 0 12px rgba(191, 54, 12, 0.2);
+}
+
 /* Dark mode speaker-specific highlights - reduced glow */
 .dark .speaker-highlight.speaker-color-1 {
     background-color: #1E3A5F;
@@ -1151,6 +1269,54 @@ body {
     background-color: #3E2723;
     color: #D7CCC8;
     box-shadow: 0 0 8px rgba(62, 39, 35, 0.6), 0 0 12px rgba(215, 204, 200, 0.2);
+}
+
+.dark .speaker-highlight.speaker-color-9 {
+    background-color: #1A237E;
+    color: #9FA8DA;
+    box-shadow: 0 0 8px rgba(26, 35, 126, 0.6), 0 0 12px rgba(159, 168, 218, 0.2);
+}
+
+.dark .speaker-highlight.speaker-color-10 {
+    background-color: #33691E;
+    color: #C5E1A5;
+    box-shadow: 0 0 8px rgba(51, 105, 30, 0.6), 0 0 12px rgba(197, 225, 165, 0.2);
+}
+
+.dark .speaker-highlight.speaker-color-11 {
+    background-color: #5A1F1F;
+    color: #EF9A9A;
+    box-shadow: 0 0 8px rgba(90, 31, 31, 0.6), 0 0 12px rgba(239, 154, 154, 0.2);
+}
+
+.dark .speaker-highlight.speaker-color-12 {
+    background-color: #263238;
+    color: #B0BEC5;
+    box-shadow: 0 0 8px rgba(38, 50, 56, 0.6), 0 0 12px rgba(176, 190, 197, 0.2);
+}
+
+.dark .speaker-highlight.speaker-color-13 {
+    background-color: #4A3F1F;
+    color: #FFE082;
+    box-shadow: 0 0 8px rgba(74, 63, 31, 0.6), 0 0 12px rgba(255, 224, 130, 0.2);
+}
+
+.dark .speaker-highlight.speaker-color-14 {
+    background-color: #311B92;
+    color: #B39DDB;
+    box-shadow: 0 0 8px rgba(49, 27, 146, 0.6), 0 0 12px rgba(179, 157, 219, 0.2);
+}
+
+.dark .speaker-highlight.speaker-color-15 {
+    background-color: #004D40;
+    color: #80CBC4;
+    box-shadow: 0 0 8px rgba(0, 77, 64, 0.6), 0 0 12px rgba(128, 203, 196, 0.2);
+}
+
+.dark .speaker-highlight.speaker-color-16 {
+    background-color: #4E2C1F;
+    color: #FFAB91;
+    box-shadow: 0 0 8px rgba(78, 44, 31, 0.6), 0 0 12px rgba(255, 171, 145, 0.2);
 }
 
 /* Speaker Legend and Bubble Styles */
@@ -1276,6 +1442,104 @@ body {
     margin-left: 0.25rem;
 }
 
+/* Floating Processing Indicator */
+.processing-indicator-floating {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-accent);
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.3s ease-out;
+}
+
+.dark .processing-indicator-floating {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.processing-indicator-floating.minimized {
+    position: sticky;
+    top: 0;
+    right: 0;
+    width: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.processing-indicator-content {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.processing-indicator-content i {
+    font-size: 1rem;
+}
+
+.processing-indicator-minimize {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.processing-indicator-minimize:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.processing-indicator-expand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border-accent);
+    background: var(--bg-secondary);
+    color: var(--text-accent);
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.dark .processing-indicator-expand {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.processing-indicator-expand:hover {
+    background: var(--bg-tertiary);
+    transform: scale(1.1);
+}
+
 /* Enhanced transcription display with speaker bubbles */
 .transcription-with-speakers {
     line-height: 1.6;
@@ -1291,6 +1555,7 @@ body {
     padding: 0.5rem 0.75rem;
     border-radius: 0.75rem;
     max-width: fit-content;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     min-width: fit-content;
     width: auto;
     word-wrap: break-word;
@@ -1423,6 +1688,321 @@ body {
 
 .speaker-segment {
     margin-bottom: 1rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    /* content-visibility: auto lets the browser skip paint + layout for
+       off-screen segments while keeping them in the DOM. Critical for
+       the speaker modal: ALL ~4500 segments stay mounted (so
+       scrollIntoView, querySelector, and the scrollbar use real
+       measured positions and don't jump as the viewport changes), but
+       only the on-screen ones pay the rendering cost. contain-intrinsic-
+       size: auto 60px gives the browser a fallback placeholder height
+       for off-screen elements when computing the document's scroll
+       height — without it the scrollbar would visibly resize as
+       elements get rendered or skipped. 60 px is a reasonable average
+       across short-line and long-paragraph segments. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 60px;
+}
+
+/* Speaker run: wraps consecutive same-speaker segments so the sticky
+ * speaker tablet at the top of the run sticks for the entire run.
+ * Without this grouping, each segment was its own sticky scope and the
+ * tablet would disappear as soon as the first segment scrolled past. */
+.speaker-run {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+/* Sticky speaker tablet — pinned to the top of its .speaker-run so it
+ * stays visible across all the run's segments. Pure CSS, no JS. */
+.speaker-run > .speaker-tablet,
+.speaker-run > .speaker-tablet-group {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Two-part pill that combines a timestamp and a speaker label into a single
+   visual unit. Only rendered when `show_timestamps_simple_view` is on.
+   The `.speaker-color-N` class lives on this wrapper so both halves inherit
+   the same base colour; the time half is slightly darkened with a uniform
+   black overlay so it reads as a different shade in both light and dark
+   themes without needing separate per-mode rules. */
+.speaker-tablet-group {
+    display: inline-flex;
+    align-items: stretch;
+    margin: 0 0.5rem 0.5rem 0;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    /* Hairline outline in a much-softened version of the speaker's
+       identity colour. Light mode mixes 55% with white so the
+       saturated dark edge becomes a quiet pastel; dark mode mixes
+       55% with black so the light pastel edge becomes a quiet
+       muted hue. The outline still reads as the speaker's hue but
+       sits well back from the pill content. */
+    border: 1px solid color-mix(in srgb, currentColor 45%, #ffffff 55%);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+.dark .speaker-tablet-group {
+    border-color: color-mix(in srgb, currentColor 45%, #000000 55%);
+}
+
+.speaker-tablet-group .speaker-tablet-time {
+    padding: 0.25rem 0.55rem;
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    user-select: none;
+    /* Light mode: blend the speaker palette's saturated foreground
+       with white so the time half reads as a softer-saturated darker
+       shade of the speaker hue (not the full saturated --speaker-fg
+       which was too high-contrast). White text on top stays legible
+       and the hue identity is preserved. color-mix is supported in
+       all evergreens. */
+    background: color-mix(in srgb, var(--speaker-fg, #424242) 70%, #ffffff 30%);
+    background-image: none;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+}
+.dark .speaker-tablet-group .speaker-tablet-time {
+    /* Dark mode: restore the original behaviour exactly — transparent
+       bg so the parent's dark pastel shows through + a 0.18 black
+       overlay to give a subtle darkened distinction from the name
+       half + inherited text colour. No opacity, no colour-mix, no
+       --speaker-fg involvement — this was the design that worked
+       before any of my recent changes touched it. */
+    background: transparent;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18));
+    color: inherit;
+}
+
+.speaker-tablet-group .speaker-tablet-name {
+    padding: 0.25rem 0.55rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Inline timestamp for the no-dialogue branch (single-speaker transcripts).
+   Sits at the start of each sentence in compact mono. */
+.speaker-segment-timestamp--inline {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+    user-select: none;
+    margin-right: 0.5rem;
+}
+
+/* Brief highlight shown on the ASR editor row that was the target of a
+   double-click-to-edit jump from the simple view.
+   The editor's table sets `td { padding: 0; }` so the inputs fill each
+   cell. Form controls (inputs, textareas) paint their own widget surface
+   over any td-level background, which is why earlier attempts at
+   td-background or td::before only painted the action column (the only
+   cell without an input filler). The reliable fix is to colour the
+   inputs/textareas themselves and the action cell's td. */
+
+.asr-editor-row--highlighted input,
+.asr-editor-row--highlighted textarea {
+    background-color: var(--bg-accent) !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    transition: background-color 0.6s ease-out;
+}
+
+/* Action cell has no input filler, so paint the td directly. */
+.asr-editor-row--highlighted > td:last-child {
+    background-color: var(--bg-accent) !important;
+    transition: background-color 0.6s ease-out;
+}
+
+/* Left accent bar on the first cell as an additional visual cue. */
+.asr-editor-row--highlighted > td:first-child {
+    box-shadow: inset 4px 0 0 var(--border-accent) !important;
+}
+
+/* Active segment highlighting - for currently playing transcript */
+.speaker-segment.active-playing-segment,
+.transcript-segment.active-playing-segment {
+    background-color: var(--bg-accent) !important;
+    box-shadow: 0 0 0 2px var(--border-accent) !important;
+    animation: pulse-highlight 0.5s ease-in-out;
+    padding: 0.75rem !important;
+    margin: 0.25rem 0 !important;
+    border-radius: 0.5rem !important;
+}
+
+.speaker-bubble.active-playing-segment {
+    background-color: var(--bg-accent) !important;
+    box-shadow: 0 0 0 2px var(--border-accent) !important;
+    animation: pulse-highlight 0.5s ease-in-out;
+    transform: scale(1.02);
+}
+
+@keyframes pulse-highlight {
+    0% {
+        box-shadow: 0 0 0 0 var(--border-accent);
+    }
+    50% {
+        box-shadow: 0 0 0 4px var(--border-accent);
+    }
+    100% {
+        box-shadow: 0 0 0 2px var(--border-accent);
+    }
+}
+
+/* Follow Player Mode Checkbox Styling */
+.follow-player-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+}
+
+.follow-player-control:hover {
+    background-color: var(--bg-accent-hover);
+}
+
+.follow-player-control input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--border-secondary);
+    border-radius: 0.25rem;
+    background-color: var(--bg-input);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.follow-player-control input[type="checkbox"]:hover {
+    border-color: var(--border-accent);
+}
+
+.follow-player-control input[type="checkbox"]:checked {
+    background-color: var(--bg-button);
+    border-color: var(--bg-button);
+    animation: checkboxPop 0.2s ease-out;
+}
+
+.follow-player-control input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3.5px;
+    height: 7px;
+    border: solid var(--text-button);
+    border-width: 0 2px 2px 0;
+    transform: translate(-50%, -60%) rotate(45deg);
+    animation: checkmarkDraw 0.2s ease-out;
+}
+
+@keyframes checkboxPop {
+    0% {
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes checkmarkDraw {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+    100% {
+        width: 3.5px;
+        height: 7px;
+        opacity: 1;
+    }
+}
+
+/* Selection checkbox - used for bulk selection in sidebar */
+.selection-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-secondary);
+    border-radius: 0.25rem;
+    background-color: var(--bg-input);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.selection-checkbox:hover {
+    border-color: var(--border-accent);
+}
+
+.selection-checkbox:checked {
+    background-color: var(--bg-button);
+    border-color: var(--bg-button);
+    animation: checkboxPop 0.2s ease-out;
+}
+
+.selection-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 9px;
+    border: solid var(--text-button);
+    border-width: 0 2.5px 2.5px 0;
+    transform: translate(-50%, -60%) rotate(45deg);
+    animation: checkmarkDraw 0.2s ease-out;
+}
+
+/* Vue transition for slide-up (bulk action bar) */
+.slide-up-enter-active,
+.slide-up-leave-active {
+    transition: transform 0.3s ease;
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+    transform: translateY(100%);
+}
+
+/* Vue transition for slide-right (vertical bulk action bar) */
+.slide-right-enter-active,
+.slide-right-leave-active {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.slide-right-enter-from,
+.slide-right-leave-to {
+    transform: translateX(-100%) translateY(-50%);
+    opacity: 0;
+}
+
+.follow-player-control .follow-icon {
+    font-size: 11px;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+
+.follow-player-control:hover .follow-icon {
+    opacity: 1;
 }
 
 .speaker-tablet {
@@ -1433,8 +2013,14 @@ body {
     font-weight: 600;
     margin-bottom: 0.5rem;
     margin-right: 0.5rem;
-    border: none;
+    /* Hairline outline in a much-softened speaker-identity colour —
+       see .speaker-tablet-group for the rationale; 55% blend with
+       white/black is enough to read as quiet rather than identity. */
+    border: 1px solid color-mix(in srgb, currentColor 45%, #ffffff 55%);
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.dark .speaker-tablet {
+    border-color: color-mix(in srgb, currentColor 45%, #000000 55%);
 }
 
 .speaker-text {
@@ -1447,32 +2033,36 @@ body {
 /* View mode toggle - compact tablet style */
 .view-mode-toggle {
     display: inline-flex;
-    align-items: center;
+    align-items: stretch;
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-primary);
     border-radius: 0.5rem;
-    padding: 0.125rem;
-    gap: 0.125rem;
+    padding: 0;
+    gap: 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .toggle-button {
-    padding: 0.25rem 0.5rem;
+    padding: 0.35rem 0.75rem;
     border: none;
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     background-color: transparent;
-    color: var(--text-muted);
-    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
     min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .toggle-button.active {
     background-color: var(--bg-accent);
     color: var(--text-accent);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .toggle-button:hover:not(.active) {
@@ -1481,8 +2071,12 @@ body {
 }
 
 .toggle-button i {
-    font-size: 0.625rem;
-    margin-right: 0.25rem;
+    font-size: 0.75rem;
+    margin-right: 0;
+}
+.toggle-button span + i,
+.toggle-button i + span {
+    margin-left: 0.25rem;
 }
 
 .dark .view-mode-toggle {
@@ -1490,25 +2084,54 @@ body {
     border-color: var(--border-secondary);
 }
 
-/* Speaker colors - enhanced palette with better variation and contrast */
-.speaker-color-1 { background-color: #E3F2FD; color: #0D47A1; } /* Deep Blue */
-.speaker-color-2 { background-color: #F3E5F5; color: #6A1B9A; } /* Deep Purple */
-.speaker-color-3 { background-color: #E8F5E8; color: #1B5E20; } /* Deep Green */
-.speaker-color-4 { background-color: #FFF3E0; color: #E65100; } /* Deep Orange */
-.speaker-color-5 { background-color: #FCE4EC; color: #AD1457; } /* Deep Pink */
-.speaker-color-6 { background-color: #E0F7FA; color: #006064; } /* Deep Cyan */
-.speaker-color-7 { background-color: #FFF9C4; color: #F57F17; } /* Deep Yellow */
-.speaker-color-8 { background-color: #EFEBE9; color: #5D4037; } /* Deep Brown */
+/* Speaker colors — pastel surface + saturated dark foreground. The
+   --speaker-fg custom property exposes the foreground for places like
+   the speaker-tablet-time half that want to use the saturated colour
+   as a background (with white text on top) — without exposing this
+   variable we'd have to either desaturate the existing surface with a
+   black/white overlay (which kills the hue) or duplicate the colour
+   list in another stylesheet. */
+.speaker-color-1  { background-color: #E3F2FD; color: #0D47A1; --speaker-fg: #0D47A1; } /* Blue */
+.speaker-color-2  { background-color: #F3E5F5; color: #6A1B9A; --speaker-fg: #6A1B9A; } /* Purple */
+.speaker-color-3  { background-color: #E8F5E9; color: #1B5E20; --speaker-fg: #1B5E20; } /* Green */
+.speaker-color-4  { background-color: #FFF3E0; color: #E65100; --speaker-fg: #E65100; } /* Orange */
+.speaker-color-5  { background-color: #FCE4EC; color: #AD1457; --speaker-fg: #AD1457; } /* Pink */
+.speaker-color-6  { background-color: #E0F7FA; color: #006064; --speaker-fg: #006064; } /* Cyan */
+.speaker-color-7  { background-color: #FFF9C4; color: #F57F17; --speaker-fg: #F57F17; } /* Yellow */
+.speaker-color-8  { background-color: #EFEBE9; color: #5D4037; --speaker-fg: #5D4037; } /* Brown */
+.speaker-color-9  { background-color: #E8EAF6; color: #283593; --speaker-fg: #283593; } /* Indigo */
+.speaker-color-10 { background-color: #F1F8E9; color: #558B2F; --speaker-fg: #558B2F; } /* Lime */
+.speaker-color-11 { background-color: #FFEBEE; color: #C62828; --speaker-fg: #C62828; } /* Red */
+.speaker-color-12 { background-color: #ECEFF1; color: #37474F; --speaker-fg: #37474F; } /* Blue Grey */
+.speaker-color-13 { background-color: #FFF8E1; color: #FF8F00; --speaker-fg: #FF8F00; } /* Amber */
+.speaker-color-14 { background-color: #EDE7F6; color: #4527A0; --speaker-fg: #4527A0; } /* Deep Purple */
+.speaker-color-15 { background-color: #E0F2F1; color: #00695C; --speaker-fg: #00695C; } /* Teal */
+.speaker-color-16 { background-color: #FBE9E7; color: #BF360C; --speaker-fg: #BF360C; } /* Deep Orange */
 
-/* Dark mode speaker colors - tasteful muted pastels with better variation */
-.dark .speaker-color-1 { background-color: #1E3A5F; color: #A5C9EA; } /* Muted blue background, soft blue text */
-.dark .speaker-color-2 { background-color: #4A2C5A; color: #D4A5D4; } /* Muted purple background, soft purple text */
-.dark .speaker-color-3 { background-color: #1F4A3C; color: #A8D5A8; } /* Muted green background, soft green text */
-.dark .speaker-color-4 { background-color: #5A3A1F; color: #E6B366; } /* Muted orange background, soft orange text */
-.dark .speaker-color-5 { background-color: #5A2C3E; color: #E6A5C4; } /* Muted pink background, soft pink text */
-.dark .speaker-color-6 { background-color: #1F4A47; color: #A5D5D0; } /* Muted teal background, soft teal text */
-.dark .speaker-color-7 { background-color: #4A4A1F; color: #E6E266; } /* Muted yellow background, soft yellow text */
-.dark .speaker-color-8 { background-color: #3E2723; color: #D7CCC8; } /* Muted brown background, soft brown text */
+/* Dark mode speaker colors - tasteful muted pastels with 16 colors.
+   --speaker-fg is set to the same dark surface colour used as the
+   speaker-color background so consumers that read it (e.g. the
+   speaker-tablet-time half) get the matching dark-mode hue rather
+   than inheriting the unrelated light-mode value. The current
+   .speaker-tablet-time dark-mode rule doesn't read it (uses an
+   overlay path), but exposing it keeps the variable consistent
+   between modes so any future consumer behaves correctly. */
+.dark .speaker-color-1  { background-color: #1E3A5F; color: #A5C9EA; --speaker-fg: #1E3A5F; } /* Blue */
+.dark .speaker-color-2  { background-color: #4A2C5A; color: #D4A5D4; --speaker-fg: #4A2C5A; } /* Purple */
+.dark .speaker-color-3  { background-color: #1F4A3C; color: #A8D5A8; --speaker-fg: #1F4A3C; } /* Green */
+.dark .speaker-color-4  { background-color: #5A3A1F; color: #E6B366; --speaker-fg: #5A3A1F; } /* Orange */
+.dark .speaker-color-5  { background-color: #5A2C3E; color: #E6A5C4; --speaker-fg: #5A2C3E; } /* Pink */
+.dark .speaker-color-6  { background-color: #1F4A47; color: #A5D5D0; --speaker-fg: #1F4A47; } /* Cyan */
+.dark .speaker-color-7  { background-color: #4A4A1F; color: #E6E266; --speaker-fg: #4A4A1F; } /* Yellow */
+.dark .speaker-color-8  { background-color: #3E2723; color: #D7CCC8; --speaker-fg: #3E2723; } /* Brown */
+.dark .speaker-color-9  { background-color: #1A237E; color: #9FA8DA; --speaker-fg: #1A237E; } /* Indigo */
+.dark .speaker-color-10 { background-color: #33691E; color: #C5E1A5; --speaker-fg: #33691E; } /* Lime */
+.dark .speaker-color-11 { background-color: #5A1F1F; color: #EF9A9A; --speaker-fg: #5A1F1F; } /* Red */
+.dark .speaker-color-12 { background-color: #263238; color: #B0BEC5; --speaker-fg: #263238; } /* Blue Grey */
+.dark .speaker-color-13 { background-color: #4A3F1F; color: #FFE082; --speaker-fg: #4A3F1F; } /* Amber */
+.dark .speaker-color-14 { background-color: #311B92; color: #B39DDB; --speaker-fg: #311B92; } /* Deep Purple */
+.dark .speaker-color-15 { background-color: #004D40; color: #80CBC4; --speaker-fg: #004D40; } /* Teal */
+.dark .speaker-color-16 { background-color: #4E2C1F; color: #FFAB91; --speaker-fg: #4E2C1F; } /* Deep Orange */
 
 /* Meeting/Created time styling improvements */
 .recording-metadata {
@@ -1763,6 +2386,48 @@ body {
         color: var(--text-secondary);
         min-height: 0;
     }
+
+    /* Remove inner box styling for summary and notes on mobile */
+    .mobile-content-box .summary-box,
+    .mobile-content-box .notes-box {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        border-radius: 0;
+        height: auto;
+    }
+
+    /* Remove padding from mobile-content-box when it contains markdown editor */
+    .mobile-content-box:has(.markdown-editor-container) {
+        padding: 0;
+        overflow: hidden; /* Ensure rounded corners are respected */
+    }
+
+    /* Make editor fill the rounded container properly */
+    .mobile-content-box .markdown-editor-container {
+        height: 100%;
+    }
+
+    .mobile-content-box .markdown-editor-container .EasyMDEContainer {
+        border: none !important;
+        border-radius: 0.75rem;
+        height: 100%;
+    }
+
+    .mobile-content-box .markdown-editor-container .EasyMDEContainer .editor-toolbar {
+        border: none !important;
+        border-radius: 0.75rem 0.75rem 0 0;
+        border-bottom: 1px solid var(--border-primary) !important;
+    }
+
+    .mobile-content-box .markdown-editor-container .EasyMDEContainer .CodeMirror {
+        border: none !important;
+        border-radius: 0 0 0.75rem 0.75rem;
+    }
+
+    .mobile-content-box .markdown-editor-container .EasyMDEContainer .CodeMirror-scroll {
+        border-radius: 0 0 0.75rem 0.75rem;
+    }
     
     /* Mobile chat layout */
     .mobile-chat-content {
@@ -2003,7 +2668,41 @@ body {
     flex-shrink: 0;
 }
 
-/* Discrete horizontal resize divider */
+/* Toast message stacking with fly-in animation */
+.toast-message {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    pointer-events: auto;
+    transform: translateX(400px);
+    margin-bottom: 0.5rem;
+    display: block !important;
+    max-width: 450px;
+    word-wrap: break-word;
+    /* All other styles handled by Tailwind classes */
+}
+
+.toast-message.toast-show {
+    transform: translateX(0);
+}
+
+#toastContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    max-width: 450px;
+}
+
+/* Horizontal resize divider between the transcript and summary columns.
+ *
+ * The 12px-wide hit area stays transparent with a -6px margin so it
+ * overlaps the column edges and doesn't consume layout width. Visual
+ * separation is carried by two pseudo-elements:
+ *   ::before — a persistent full-height hairline seam in --border-primary
+ *              so the two columns always read as distinct panels. The
+ *              token is themed, so this adapts to every light/dark theme.
+ *   ::after  — a rounded accent grab-handle that fades in on hover and
+ *              while dragging, giving a clear "you can drag this"
+ *              affordance without cluttering the resting state.
+ */
 #mainColumnResizer {
     width: 12px !important;
     background-color: transparent !important;
@@ -2013,17 +2712,44 @@ body {
     z-index: 10;
 }
 
-#mainColumnResizer:hover::before {
+/* Persistent hairline seam (always visible). */
+#mainColumnResizer::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    transform: translateX(-50%);
+    background-color: var(--border-primary);
+    transition: width 0.15s ease, background-color 0.15s ease;
+}
+
+/* Hover / active: the seam thickens slightly and tints to accent. */
+#mainColumnResizer:hover::before,
+#mainColumnResizer.is-resizing::before {
+    width: 2px;
+    background-color: var(--border-accent);
+}
+
+/* Rounded accent grab-handle, hidden at rest, fades in on hover/drag. */
+#mainColumnResizer::after {
     content: '';
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     width: 4px;
-    height: 60px;
+    height: 48px;
     background-color: var(--border-accent);
     border-radius: 2px;
-    transition: background-color 0.15s ease;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+#mainColumnResizer:hover::after,
+#mainColumnResizer.is-resizing::after {
+    opacity: 1;
 }
 
 /* Ensure consistent layout behavior when sidebar is collapsed */
@@ -2490,7 +3216,197 @@ body {
     background-color: transparent;
 }
 
-.dark .audio-player-container audio::-webkit-media-controls-mute-button {
+/* Dark mode: use browser's native dark theme for audio controls */
+.dark audio {
+    color-scheme: dark;
+}
+
+/* Custom volume slider styling - accent colored */
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    height: 6px;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+    background: var(--border-accent);
+    opacity: 0.5;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.dark .volume-slider::-webkit-slider-runnable-track {
+    background: var(--border-accent);
+    opacity: 0.6;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text-accent);
+    margin-top: -3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.volume-slider::-moz-range-track {
+    background: var(--border-accent);
+    opacity: 0.5;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.dark .volume-slider::-moz-range-track {
+    background: var(--border-accent);
+    opacity: 0.6;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text-accent);
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.volume-slider:hover::-webkit-slider-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.volume-slider:hover::-moz-range-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+/* Vertical volume slider (popup) */
+/* Vertical volume slider implemented as a HORIZONTAL native range
+   input rotated 90 degrees. The previous writing-mode: vertical-lr
+   approach was modern but has known thumb-alignment quirks in Chrome
+   that placed the thumb off-centre from the track (the cross-axis
+   width differences between track and thumb didn't translate cleanly
+   to vertical orientation). Rotation produces a pixel-perfect
+   vertical control across every browser that supports range inputs.
+
+   Wrapper element is responsible for reserving the rotated bounding
+   box; see .volume-slider-vertical-wrap below. */
+.volume-slider-vertical {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    /* Horizontal "width" becomes the visible LENGTH of the rotated
+       slider, so the inline style sets this; CSS-controlled height
+       gives it the touch slop while keeping the track narrow. */
+    height: 20px;
+    transform: rotate(-90deg);
+    transform-origin: center center;
+}
+
+.volume-slider-vertical::-webkit-slider-runnable-track {
+    background: var(--border-accent);
+    opacity: 0.5;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.dark .volume-slider-vertical::-webkit-slider-runnable-track {
+    background: var(--border-accent);
+    opacity: 0.6;
+}
+
+.volume-slider-vertical::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--text-accent);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    /* Lift the thumb up so its centre aligns with the centre of the
+       6 px track (default behaviour leaves it sitting on the track's
+       baseline). margin-top is the standard cross-browser trick. */
+    margin-top: -4px;
+}
+
+.volume-slider-vertical::-moz-range-track {
+    background: var(--border-accent);
+    opacity: 0.5;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.dark .volume-slider-vertical::-moz-range-track {
+    background: var(--border-accent);
+    opacity: 0.6;
+}
+
+.volume-slider-vertical::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--text-accent);
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+/* Wrapper that reserves a SQUARE bounding box for the rotated slider.
+   The rotation happens around the centre, so the rotated visible
+   extent matches the input's pre-rotation width — but the layout box
+   stays at the pre-rotation aspect ratio, which would shift the
+   surrounding column. Setting the wrapper to width and height equal
+   to the rotated extent gives the popover a clean square slot. */
+.volume-slider-vertical-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Player play button - accent colored with proper contrast */
+.player-play-button {
+    background-color: var(--text-accent);
+    color: white;
+}
+
+.player-play-button:hover {
+    filter: brightness(1.1);
+}
+
+.dark .player-play-button {
+    background-color: var(--text-accent);
+    color: var(--bg-primary);
+}
+
+.dark .player-play-button:hover {
+    filter: brightness(1.15);
+}
+
+/* Playback Speed Control Dropdown */
+.speed-dropdown {
+    animation: speedDropdownFade 0.12s ease-out;
+    width: 52px;
+}
+
+@keyframes speedDropdownFade {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Custom audio player wrapper for better control */
@@ -2559,9 +3475,43 @@ body {
 }
 
 .asr-editor-table td {
-    padding: 0.25rem; /* Reduced padding */
+    padding: 0; /* No padding - let inputs fill the cell */
     vertical-align: middle;
-    border: 1px solid var(--border-primary);
+    border: 1px solid var(--border-secondary);
+}
+
+/* More visible borders in dark mode */
+.dark .asr-editor-table,
+.dark .asr-editor-table th,
+.dark .asr-editor-table td {
+    border-color: rgba(148, 163, 184, 0.3); /* slate-400 with opacity for visibility */
+}
+
+/* ASR Editor inputs - blend into table cells */
+.asr-editor-table input,
+.asr-editor-table textarea {
+    border-radius: 0 !important; /* Override global rounded corners */
+    margin: 0;
+    display: block;
+    min-height: 100%;
+}
+
+.asr-editor-table textarea {
+    vertical-align: top;
+    min-height: 2.5rem; /* Minimum height for single line */
+    line-height: 1.5;
+}
+
+/* Sticky header for ASR editor table */
+.asr-editor-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.asr-editor-table thead th {
+    background-color: var(--bg-tertiary);
+    border-collapse: collapse;
 }
 
 /* Custom Number Input with Subtle Spinners */
@@ -2714,6 +3664,12 @@ body {
 
 .markdown-editor-container .EasyMDEContainer .editor-toolbar {
     background: var(--bg-tertiary);
+    /* EasyMDE's default CSS puts a 1px solid #ddd on the toolbar's
+       top/left/right edges. In dark mode that reads as a white
+       outline at the top of the editor — explicitly reset all four
+       sides and re-add only the bottom hairline using the theme
+       variable. */
+    border: none;
     border-bottom: 1px solid var(--border-secondary);
     border-radius: 0.75rem 0.75rem 0 0;
     padding: 0.5rem;
@@ -2922,6 +3878,24 @@ body.fullscreen-mode {
     color: var(--text-primary);
 }
 
+/* Fix cursor/caret color in dark mode for ALL CodeMirror instances */
+.dark .CodeMirror-cursor {
+    border-left: 2px solid var(--text-primary) !important;
+}
+
+/* Also fix the caret in the actual textarea (when CodeMirror is not active) */
+.dark textarea,
+.dark input[type="text"],
+.dark input[type="search"] {
+    caret-color: var(--text-primary);
+}
+
+/* Ensure cursor is visible in all markdown editors */
+.markdown-editor-container .CodeMirror-cursor,
+.recording-notes-editor .CodeMirror-cursor {
+    border-left: 2px solid var(--text-primary) !important;
+}
+
 .dark .markdown-editor-container .EasyMDEContainer .editor-toolbar {
     background: var(--bg-tertiary);
     border-bottom-color: var(--border-secondary);
@@ -3012,14 +3986,22 @@ body.fullscreen-mode {
     font-weight: 600;
 }
 
-/* Recording notes editor styles */
+/* Recording notes editor styles.
+   Matches the Summary/Notes .markdown-editor-container treatment: the
+   editor IS the surface (bg-input fill, rounded), with NO outer border —
+   the previous 1px border-secondary outline made it read as a box inside
+   the section's padded box ("box in a box"). EasyMDE's own default
+   CodeMirror/toolbar borders are neutralised below so it's one seamless
+   surface that fills the container. */
 .recording-notes-editor .EasyMDEContainer {
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--border-secondary);
+    background: var(--bg-input);
+    border: 1px solid var(--border-secondary); /* defining edge around the editor card */
     border-radius: 0.5rem;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .summary-editor-container {
@@ -3036,11 +4018,20 @@ body.fullscreen-mode {
     flex-grow: 1;
     background: var(--bg-input);
     color: var(--text-primary);
+    border: none !important; /* neutralise EasyMDE's default CodeMirror border (the inner box) */
+}
+
+/* Only the wrapper scrolls — keeps a single scrollbar inside the editor. */
+.recording-notes-editor .CodeMirror-scroll {
+    overflow: auto !important;
+    height: 100% !important;
 }
 
 .recording-notes-editor .editor-toolbar {
     background: var(--bg-tertiary);
+    border: none; /* drop EasyMDE's default toolbar outline */
     border-bottom: 1px solid var(--border-secondary);
+    border-radius: 0.5rem 0.5rem 0 0;
 }
 
 .recording-notes-editor .editor-toolbar button {
@@ -3059,14 +4050,38 @@ body.fullscreen-mode {
     border-left: 1px solid var(--text-primary);
 }
 
-/* Recording notes editor - fixed height with internal scrolling */
+/* Recording notes editor base */
 .recording-notes-editor {
-    flex: 1 !important; /* Take available space in flex container */
     display: flex !important;
     flex-direction: column !important;
-    min-height: 200px !important; /* Minimum usable height */
-    max-height: none !important; /* Allow parent to control max height */
-    overflow: hidden !important; /* Prevent container from growing */
+    min-height: 150px !important;
+    overflow: hidden !important;
+}
+
+/* During active recording: fill available space */
+.recording-notes-editor.recording-active {
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+
+/* Notes editor inside accordion — fill expanded section */
+.recording-notes-editor.accordion-expanded {
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+
+/* Recess the input area below the (lighter) toolbar so they read as
+   distinct surfaces. Needed especially in dark mode where --bg-input and
+   --bg-tertiary are the same colour, which made the toolbar and input
+   indistinguishable. Light mode keeps the near-white --bg-input field;
+   dark mode drops the input to the darker --bg-primary so it sits visibly
+   recessed under the gray-700 toolbar. */
+.dark .recording-notes-editor .CodeMirror,
+.dark .recording-notes-editor .editor-preview,
+.dark .recording-notes-editor .editor-preview-side {
+    background: var(--bg-primary);
 }
 
 .recording-notes-editor .EasyMDEContainer {
@@ -3093,15 +4108,14 @@ body.fullscreen-mode {
     min-height: auto !important; /* Don't force content to fill editor */
 }
 
-/* Recording notes textarea fallback - fixed height with internal scrolling */
+/* Recording notes textarea fallback - constrained height with internal scrolling */
 .recording-notes-editor textarea {
     background-color: var(--bg-input) !important;
     color: var(--text-primary) !important;
     border-color: var(--border-secondary) !important;
-    flex: 1 !important; /* Take available space */
+    flex: 1 !important; /* Fill editor container */
     height: auto !important; /* Let flex control height */
-    min-height: 200px !important; /* Minimum usable height */
-    max-height: none !important; /* No max height - let parent control */
+    min-height: 0 !important; /* Allow flex shrinking within capped parent */
     overflow-y: auto !important; /* Enable internal scrolling */
     resize: none !important; /* Prevent manual resizing */
 }
@@ -3112,16 +4126,15 @@ body.fullscreen-mode {
     box-shadow: 0 0 0 2px var(--ring-focus) !important;
 }
 
-/* Ensure all textareas in recording view use theme colors and fixed height */
+/* Ensure all textareas in recording view use theme colors and constrained height */
 .recording-notes-editor textarea,
 textarea[ref="recordingNotesEditor"] {
     background-color: var(--bg-input) !important;
     color: var(--text-primary) !important;
     border: 1px solid var(--border-secondary) !important;
-    flex: 1 !important; /* Take available space */
+    flex: 1 !important; /* Fill editor container */
     height: auto !important; /* Let flex control height */
-    min-height: 200px !important; /* Minimum usable height */
-    max-height: none !important; /* No max height - let parent control */
+    min-height: 0 !important; /* Allow flex shrinking within capped parent */
     overflow-y: auto !important; /* Enable internal scrolling */
     resize: none !important; /* Prevent manual resizing */
 }
@@ -3171,14 +4184,17 @@ textarea[ref="recordingNotesEditor"]:focus {
 
 /* Sidebar Container */
 .sidebar {
-    position: fixed; /* Changed to fixed to overlay correctly */
-    top: 69px; /* Height of the header */
+    position: fixed;
+    /* Top matches the consolidated header height (56px min-height +
+       2px*2 padding ≈ 56-60px). Use a CSS variable so a future change
+       to the header height only needs to update one number. */
+    top: var(--app-header-height, 56px);
     left: 0;
     bottom: 0;
-    width: 320px; /* w-80 */
+    width: 320px;
     background-color: var(--bg-secondary);
     border-right: 1px solid var(--border-primary);
-    z-index: 50; /* Higher z-index to be above backdrop */
+    z-index: 50;
     transform: translateX(0);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -3285,4 +4301,354 @@ textarea[ref="recordingNotesEditor"]:focus {
     .tab-nav > * + * {
         margin-left: 0 !important;
     }
+}
+
+/* Custom Checkbox Styling for Speaker Modal */
+input[type="checkbox"].speaker-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid var(--border-secondary);
+    border-radius: 0.25rem;
+    background-color: var(--bg-input);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+input[type="checkbox"].speaker-checkbox:hover {
+    border-color: var(--text-accent);
+    background-color: var(--bg-secondary);
+}
+
+input[type="checkbox"].speaker-checkbox:focus {
+    outline: none;
+    border-color: var(--text-accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input[type="checkbox"].speaker-checkbox:checked {
+    background-color: var(--text-accent);
+    border-color: var(--text-accent);
+}
+
+input[type="checkbox"].speaker-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.25rem;
+    height: 0.5rem;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: translate(-50%, -60%) rotate(45deg);
+}
+
+input[type="checkbox"].speaker-checkbox:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Dark mode adjustments */
+:root[data-theme="dark"] input[type="checkbox"].speaker-checkbox {
+    border-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+:root[data-theme="dark"] input[type="checkbox"].speaker-checkbox:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme="dark"] input[type="checkbox"].speaker-checkbox:checked {
+    background-color: var(--text-accent);
+    border-color: var(--text-accent);
+}
+
+/* Custom Select Dropdown Styling */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%236b7280' d='M4.5 5.5L8 9l3.5-3.5L10.75 4.75 8 7.5 5.25 4.75z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1em 1em;
+    padding-right: 2rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+/* Dark mode select styling */
+.dark select {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23cbd5e1' d='M4.5 5.5L8 9l3.5-3.5L10.75 4.75 8 7.5 5.25 4.75z'/%3E%3C/svg%3E");
+    background-color: var(--bg-input);
+    border-color: var(--border-secondary);
+}
+
+/* Hover and focus states for select */
+select:hover {
+    border-color: var(--border-accent);
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dark select:focus {
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+/* Disabled select styling */
+select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--bg-tertiary);
+}
+
+/* Input and textarea improvements for dark mode */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="date"],
+.dark input[type="number"],
+.dark textarea {
+    background-color: var(--bg-input);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="password"]:focus,
+.dark input[type="date"]:focus,
+.dark input[type="number"]:focus,
+.dark textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+/* Placeholder text improvements */
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: var(--text-light);
+    opacity: 0.7;
+}
+
+/* Description text improvements */
+.dark .text-xs.text-gray-500,
+.dark .text-xs.text-gray-400,
+.dark .text-sm.text-gray-500,
+.dark .text-sm.text-gray-400 {
+    color: var(--text-muted) !important;
+}
+
+/* Label text improvements */
+.dark label {
+    color: var(--text-secondary);
+}
+
+/* ===== Video Fullscreen Overlay ===== */
+/* Docked video panel (desktop). A flex-shrink-0 strip at the bottom of the
+   transcript column; the flex-1 transcript scroller above shrinks to make
+   room (content pushed up, not overlaid). Holds a separate muted <video>
+   that mirrors the main player. */
+.video-dock {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    /* Height is driven by an inline style bound to videoDockHeight
+       (drag-resizable, persisted). min-height is a floor in case. */
+    min-height: 120px;
+    border-top: var(--border-hairline) solid var(--border-primary);
+    background: var(--bg-secondary);
+}
+/* Drag handle on the dock's content-facing edge. Thin, ns-resize, with a
+   centred grip line that strengthens on hover. */
+.video-dock__resizer {
+    flex-shrink: 0;
+    height: 6px;
+    cursor: ns-resize;
+    position: relative;
+}
+.video-dock__resizer::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 36px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--border-primary);
+    transition: background-color 0.15s ease;
+}
+.video-dock__resizer:hover::before {
+    background: var(--border-accent);
+}
+.video-dock__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-1) var(--sp-2) var(--sp-1) var(--sp-3);
+    border-bottom: var(--border-hairline) solid var(--border-primary);
+    flex-shrink: 0;
+}
+.video-dock__title {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.video-dock__video {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    object-fit: contain;
+    background: #000;
+    cursor: pointer;
+}
+
+.video-fullscreen-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: none;
+}
+.video-fullscreen-overlay:has(.video-fullscreen-controls.visible) {
+    cursor: default;
+}
+.video-fullscreen-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    cursor: inherit;
+}
+.video-fullscreen-subtitle {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 80%;
+    max-height: 30vh;
+    overflow-y: auto;
+    text-align: center;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    pointer-events: auto;
+    transition: bottom 0.3s ease;
+    overscroll-behavior: contain;
+}
+.video-fullscreen-subtitle.subtitle-shifted {
+    bottom: 100px;
+}
+.video-fullscreen-subtitle-speaker {
+    font-weight: 600;
+    margin-right: 6px;
+}
+.video-fullscreen-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding-top: 40px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+}
+.video-fullscreen-controls.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Fullscreen volume slider - white themed */
+.fullscreen-volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+.fullscreen-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.fullscreen-volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.fullscreen-volume-slider::-moz-range-track {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+
+/* ---- Sidebar recording rows ------------------------------------------ */
+
+/* Section header (TODAY / THIS WEEK / LAST MONTH / OLDER) — full-bleed
+   structural band. The recordings list container has no horizontal
+   padding now, so the header sits edge-to-edge naturally; no negative
+   margins required. */
+.recording-group-header {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-primary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 6px var(--sp-3);
+    margin: 0;
+    line-height: var(--lh-tight);
+    text-align: center;
+}
+
+/* Each section group wraps its rows for divider scoping. */
+.recording-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Uniform 1px hairline between every consecutive pair of rows. The
+   hairline is on the next row's top border, so it lives INSIDE the
+   row's box and runs the full sidebar width — straight-line dividers,
+   no rounded corners, no state-dependent gaps. */
+.recording-group > .recording-row + .recording-row {
+    border-top: 1px solid var(--border-primary);
+}
+
+/* Rows themselves have sharp corners and full sidebar width — the
+   active background, hover background, and hairline divider all
+   extend edge-to-edge. No card chrome. */
+.recording-row {
+    position: relative;
 }

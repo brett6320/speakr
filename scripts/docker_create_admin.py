@@ -18,7 +18,7 @@ try:
 except (RuntimeError, AttributeError, KeyError):
     # If not in app context, import directly
     try:
-        from app import app, db, User, bcrypt
+        from src.app import app, db, User, bcrypt
     except ImportError as e:
         print(f"Error: Could not import required modules: {e}")
         print("Make sure docker_create_admin.py is runnable and PYTHONPATH is set.")
@@ -50,9 +50,10 @@ def create_admin_user_from_env():
         print("Error: Username must be at least 3 characters long.")
         sys.exit(1)
     
-    # Validate email
+    # Validate email (skip DNS/MX check if SKIP_EMAIL_DOMAIN_CHECK=true)
+    skip_domain_check = os.environ.get('SKIP_EMAIL_DOMAIN_CHECK', 'false').lower() == 'true'
     try:
-        validate_email(email)
+        validate_email(email, check_deliverability=not skip_domain_check)
     except EmailNotValidError as e:
         print(f"Error: Invalid email: {str(e)}")
         sys.exit(1)
@@ -78,7 +79,7 @@ def create_admin_user_from_env():
         
         # Create new admin user
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        new_user = User(username=username, email=email, password=hashed_password, is_admin=True)
+        new_user = User(username=username, email=email, password=hashed_password, is_admin=True, email_verified=True)
         db.session.add(new_user)
         db.session.commit()
         
