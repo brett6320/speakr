@@ -19,7 +19,7 @@ try:
 except (RuntimeError, AttributeError, KeyError):
     # If not in app context, import directly
     try:
-        from app import app, db, User, bcrypt
+        from src.app import app, db, User, bcrypt
     except ImportError as e:
         print(f"Error: Could not import required modules: {e}")
         print("Make sure create_admin.py is runnable and PYTHONPATH is set.")
@@ -48,12 +48,13 @@ def create_admin_user():
             break
     
     # Get email
+    skip_domain_check = os.environ.get('SKIP_EMAIL_DOMAIN_CHECK', 'false').lower() == 'true'
     while True:
         email = input("Enter email address: ").strip()
         try:
-            # Validate email
-            validate_email(email)
-            
+            # Validate email (skip DNS/MX check if SKIP_EMAIL_DOMAIN_CHECK=true)
+            validate_email(email, check_deliverability=not skip_domain_check)
+
             # Check if email already exists
             with app.app_context():
                 existing_email = db.session.query(User).filter_by(email=email).first()
@@ -80,7 +81,7 @@ def create_admin_user():
     # Create user
     with app.app_context():
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        new_user = User(username=username, email=email, password=hashed_password, is_admin=True)
+        new_user = User(username=username, email=email, password=hashed_password, is_admin=True, email_verified=True)
         db.session.add(new_user)
         db.session.commit()
         

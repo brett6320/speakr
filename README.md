@@ -3,509 +3,327 @@
 </div>
 
 <h1 align="center">Speakr</h1>
-<p align="center">Self-hosted, intelligent note-taking for meetings and recordings</p>
+<p align="center">Self-hosted AI transcription and intelligent note-taking platform</p>
 
 <p align="center">
   <a href="https://www.gnu.org/licenses/agpl-3.0"><img alt="AGPL v3" src="https://img.shields.io/badge/License-AGPL_v3-blue.svg"></a>
   <a href="https://github.com/murtaza-nasir/speakr/actions/workflows/docker-publish.yml"><img alt="Docker Build" src="https://github.com/murtaza-nasir/speakr/actions/workflows/docker-publish.yml/badge.svg"></a>
+  <a href="https://hub.docker.com/r/learnedmachine/speakr"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/learnedmachine/speakr"></a>
+  <a href="https://github.com/murtaza-nasir/speakr/releases/latest"><img alt="Latest Version" src="https://img.shields.io/badge/version-0.9.4-alpha-brightgreen.svg"></a>
 </p>
 
-> Speakr is an intelligent, self-hosted web application that transforms your audio recordings into organized, searchable, and insightful notes. By running on your own server, it ensures your sensitive conversations and data remain completely private.
+<p align="center">
+  <a href="https://murtaza-nasir.github.io/speakr">Documentation</a> •
+  <a href="https://murtaza-nasir.github.io/speakr/getting-started">Quick Start</a> •
+  <a href="https://murtaza-nasir.github.io/speakr/screenshots">Screenshots</a> •
+  <a href="https://hub.docker.com/r/learnedmachine/speakr">Docker Hub</a> •
+  <a href="https://github.com/murtaza-nasir/speakr/releases">Releases</a>
+</p>
 
-> Designed for a wide range of uses, Speakr is trusted by professionals for meeting minutes, by therapists for session notes, by students for lecture capture, and even for transcribing D&D sessions. It automatically transcribes audio with speaker identification, generates concise summaries, and provides an AI chat interface to interact with your content.
+---
+
+## Overview
+
+Speakr transforms your audio recordings into organized, searchable, and intelligent notes. Built for privacy-conscious groups and individuals, it runs entirely on your own infrastructure, ensuring your sensitive conversations remain completely private.
 
 <div align="center">
-    <img src="static/img/main.png" alt="Speakr Main Interface" width="750"/>
+    <img src="docs/assets/images/screenshots/main-view-video.png" alt="Speakr Main Interface" width="750"/>
 </div>
 
+## Key Features
+
+Speakr turns a recording into organized, searchable, shareable knowledge. Here is the pipeline:
+
+### Capture
+- **Flexible input** - record from your microphone, your computer's system or browser-tab audio, or both mixed together; or drag and drop existing files. A per-OS setup guide and a virtual-device picker surface Pulse / PipeWire monitors, BlackHole, VB-Cable, Voicemeeter, and Stereo Mix as inputs.
+- **Long sessions** - in-app recordings stream to the server during capture, so sessions can run for hours and survive a page reload.
+- **Hands-off intake** - a watched "black hole" folder auto-imports and processes any audio dropped into it.
+
+### Transcribe
+- **Bring your own engine** - self-hosted WhisperX (recommended; it is what enables the speaker features below), OpenAI, Mistral / Voxtral, AssemblyAI, or any custom ASR webservice. The right connector is auto-detected from your configuration.
+- **Speaker diarization** - automatic who-said-what labeling (WhisperX, or OpenAI's diarizing models).
+- **Voice profiles** - recognize the same person across different recordings via voice embeddings (requires the WhisperX ASR backend).
+- **Custom vocabulary and hotwords** (most effective with the WhisperX backend) - bias the transcriber toward names, jargon, and acronyms it would otherwise mishear; configurable globally or per tag / folder.
+- **Synced playback** - click any line to jump to that moment, follow-along highlighting during playback, and a chat-style bubble view.
+- **Language support** - automatic language detection plus a quick-pick of 11 common languages.
+
+### Understand
+- **Summaries** - generated automatically, with prompts you can fully customize per recording, tag, or folder (including reusable prompt variables).
+- **Event extraction** - surface action items and calendar-worthy events from a transcript.
+- **Per-recording chat** - ask questions about a single recording in a floating, dockable panel.
+- **Inquire Mode** - semantic search and natural-language chat across your entire library at once.
+
+### Organize
+- **Folders and bulk operations** to keep a large library tidy.
+- **Smart tags** that carry their own AI prompt and ASR settings - and stack, so multiple tags layer their instructions.
+- **Retention policies** with auto-deletion and per-recording protection from cleanup.
+- **Automated export** to templated files when a recording finishes.
+
+### Collaborate
+- **Multi-user** with **Single Sign-On** against any OIDC provider (Keycloak, Azure AD, Google, Auth0, Pocket ID).
+- **Groups** with group-scoped tags that auto-share recordings to every member.
+- **Granular internal sharing** (view / edit / reshare) and admin-controlled, secure **public links**.
+
+### Automate
+- **REST API v1** with a Swagger UI, for automation tools (n8n, Zapier, Make) and dashboards.
+- **Signed webhooks** - HMAC-signed, SSRF-guarded, retrying outbound notifications on recording lifecycle events.
+- **Usage budgets** for LLM tokens and transcription minutes, per user.
+
+Speakr is also an installable Progressive Web App - mobile-first, offline-capable, with a phone share-target - and ships light/dark themes, an incognito mode, and a UI translated into seven languages.
+
+## Real-World Use Cases
+
+Different people use Speakr's collaboration and retention features in different ways:
+
+| Use Case | Setup | What It Does |
+|----------|-------|-------------|
+| **Family memories** | Create "Family" group with protected tag | Everyone gets access to trips and events automatically, recordings preserved forever |
+| **Book club discussions** | "Book Club" group, tag monthly meetings | All members auto-share discussions, can add personal notes about what resonated |
+| **Work project group** | Share individually with 3 teammates | Temporary collaboration, easy to revoke when project ends |
+| **Daily group standups** | Group tag with 14-day retention | Auto-share with group, auto-cleanup of routine meetings |
+| **Architecture decisions** | Engineering group tag, protected from deletion | Technical discussions automatically shared, preserved permanently as reference |
+| **Client consultations** | Individual share with view-only permission | Controlled external access, clients can't accidentally edit |
+| **Research interviews** | Protected tag + Obsidian export | Preserve recordings indefinitely, transcripts auto-import to note-taking system |
+| **Legal consultations** | Group tag with 7-year retention | Automatic sharing with legal group, compliance-based retention |
+| **Sales calls** | Group tag with 1-year retention | Whole sales group learns from each call, cleanup after sales cycle |
+
+### Creative Tag Prompt Examples
+
+Tags with custom prompts transform raw recordings into exactly what you need:
+
+- **Recipe recordings**: Record yourself cooking while narrating - tag with "Recipe" to convert messy speech into formatted recipes with ingredient lists and numbered steps
+- **Lecture notes**: Students tag lectures with "Study Notes" to get organized outlines with concepts, examples, and definitions instead of raw transcripts
+- **Code reviews**: "Code Review" tag extracts issues, suggested changes, and action items in technical language developers can use directly
+- **Meeting summaries**: "Action Items" tag ignores discussion and returns just decisions, tasks, and deadlines
+
+### Tag Stacking for Combined Effects
+
+Stack multiple tags to layer instructions:
+- "Recipe" + "Gluten Free" = Formatted recipe with gluten substitution suggestions
+- "Lecture" + "Biology 301" = Study notes format focused on biological terminology
+- "Client Meeting" + "Legal Review" = Client requirements plus legal implications highlighted
+
+The order can matter - start with format tags, then add focus tags for best results.
+
+### Integration Examples
+
+- **Obsidian/Logseq**: Enable auto-export to write completed transcripts directly to your vault using your custom template - no manual export needed
+- **Documentation wikis**: Map auto-export to your wiki's import folder for seamless transcript publishing
+- **Content creation**: Create SRT subtitle templates from your audio recordings for podcasts or video content
+- **Project management**: Extract action items with custom tag prompts, then auto-export for automated task creation
+
+## Quick Start
+
+### Using Docker (Recommended)
+
+```bash
+# Create project directory
+mkdir speakr && cd speakr
+
+# Download docker-compose configuration:
+wget https://raw.githubusercontent.com/murtaza-nasir/speakr/master/config/docker-compose.example.yml -O docker-compose.yml
+
+# Download the environment template:
+wget https://raw.githubusercontent.com/murtaza-nasir/speakr/master/config/env.transcription.example -O .env
+
+# Configure your API keys and launch
+nano .env
+docker compose up -d
+
+# Access at http://localhost:8899
+```
+
+> **Lightweight image:** Use `learnedmachine/speakr:lite` for a smaller image (~725MB vs ~4.4GB) that skips PyTorch. All features work normally — only Inquire Mode's semantic search falls back to basic text search.
+
+**Required API Keys:**
+- `TRANSCRIPTION_API_KEY` - For speech-to-text (OpenAI) or `ASR_BASE_URL` for self-hosted
+- `TEXT_MODEL_API_KEY` - For summaries, titles, and chat (OpenRouter or OpenAI)
+
+### Transcription Options
+
+Speakr uses a **connector-based architecture** that auto-detects your transcription provider:
+
+| Option | Setup | Speaker Diarization | Voice Profiles |
+|--------|-------|---------------------|----------------|
+| **OpenAI Transcribe** | Just API key | Yes (`gpt-4o-transcribe-diarize`) | No |
+| **WhisperX ASR** | GPU container | Yes (best quality) | Yes |
+| **Mistral Voxtral** | Just API key | Yes (built-in) | No |
+| **VibeVoice ASR** | Self-hosted (vLLM) | Yes (built-in) | No |
+| **AssemblyAI** | Just API key | Yes (built-in) | No |
+| **Legacy Whisper** | Just API key | No | No |
+
+**Simplest setup (OpenAI with diarization):**
+```bash
+TRANSCRIPTION_API_KEY=sk-your-openai-key
+TRANSCRIPTION_MODEL=gpt-4o-transcribe-diarize
+```
+
+**Best quality (Self-hosted WhisperX):**
+```bash
+ASR_BASE_URL=http://whisperx-asr:9000
+ASR_RETURN_SPEAKER_EMBEDDINGS=true  # Enable voice profiles
+```
+Requires [WhisperX ASR Service](https://github.com/murtaza-nasir/whisperx-asr-service) container with GPU.
+
+**Mistral Voxtral (cloud diarization):**
+```bash
+TRANSCRIPTION_CONNECTOR=mistral
+TRANSCRIPTION_API_KEY=your-mistral-key
+TRANSCRIPTION_MODEL=voxtral-mini-latest
+```
+
+**VibeVoice ASR (self-hosted, no cloud dependency):**
+```bash
+TRANSCRIPTION_CONNECTOR=vibevoice
+TRANSCRIPTION_BASE_URL=http://your-vllm-server:8000
+TRANSCRIPTION_MODEL=vibevoice
+```
+
+**AssemblyAI (cloud diarization, long multi-speaker meetings):**
+```bash
+TRANSCRIPTION_CONNECTOR=assemblyai
+TRANSCRIPTION_API_KEY=your-assemblyai-key
+```
+Handles multi-hour, multi-speaker files in a single job. New accounts get free credits with no card required.
+Requires [VibeVoice](https://huggingface.co/microsoft/VibeVoice-ASR) served via vLLM with GPU.
+
+> **PyTorch 2.6 Users:** If you encounter a "Weights only load failed" error with WhisperX, add `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=true` to your ASR container. See [troubleshooting](https://murtaza-nasir.github.io/speakr/troubleshooting#pytorch-26-weights-loading-error-whisperx-asr-service) for details.
+
+**[View Full Installation Guide →](https://murtaza-nasir.github.io/speakr/getting-started/installation)**
+
+## Documentation
+
+Complete documentation is available at **[murtaza-nasir.github.io/speakr](https://murtaza-nasir.github.io/speakr)**
+
+- [Getting Started](https://murtaza-nasir.github.io/speakr/getting-started) - Quick setup guide
+- [User Guide](https://murtaza-nasir.github.io/speakr/user-guide/) - Learn all features
+- [Admin Guide](https://murtaza-nasir.github.io/speakr/admin-guide/) - Administration and configuration
+- [Troubleshooting](https://murtaza-nasir.github.io/speakr/troubleshooting) - Common issues and solutions
+- [FAQ](https://murtaza-nasir.github.io/speakr/faq) - Frequently asked questions
+
+## Latest Release (v0.9.4-alpha)
+
+**A feature release focused on transcription control, sharing privacy, and upload reliability.** Transcription templates now bundle an initial prompt and hotwords that you save once and reuse from the upload modal, tags, folders, or your account default. Summarization and chat each gain an independent toggle for making per-line timestamps available to the model, so the AI can reference moments in long recordings. Recipients of a shared recording now see only the tag or folder that granted them access, never the owner's other labels. Failed uploads retry themselves automatically across all browsers, and any recording is reachable by a direct `/recordings/<id>` link. For self-hosted text backends with prefix caching, an opt-in option reshapes the title and summary prompts to reuse the transcript prefix, and the admin dashboard now reports prompt-cache reads so the saving is visible. This option stays off by default for now and may become the default in a future release. **Full release notes on the [GitHub release page](https://github.com/murtaza-nasir/speakr/releases/tag/v0.9.4-alpha).**
+
+### v0.9.3-alpha (previous release)
+
+**Security patch: updates bundled FFmpeg to fix CVE-2026-8461.** Speakr runs FFmpeg/ffprobe on uploaded media, and the previously bundled build (johnvansickle static 7.0.2) carried a MagicYUV decoder flaw ("PixelSmash") that a crafted file could use for a crash or remote code execution. FFmpeg now comes from the maintained BtbN builds, pinned to the 8.1 branch (8.1.2, which contains the fix). Recommended for all deployments, especially multi-user instances that accept untrusted uploads. **Full release notes on the [GitHub release page](https://github.com/murtaza-nasir/speakr/releases/tag/v0.9.3-alpha).**
+
+### v0.9.2-alpha (previous release)
+
+**Adds a pluggable local / S3 storage backend.** Recording audio can now live in S3-compatible object storage (AWS S3, MinIO, Backblaze B2, Cloudflare R2, Wasabi) instead of, or alongside, the local filesystem, with presigned-URL delivery and a migration script for existing recordings. Local storage stays the default, so existing deployments are unaffected until they opt in. Contributed by @Daabramov (#268). **Full release notes on the [GitHub release page](https://github.com/murtaza-nasir/speakr/releases/tag/v0.9.2-alpha).**
+
+### v0.9.1-alpha (previous release)
+
+**A patch release hardening the v0.9.0 upload path.** Fixes uploads failing with an expired CSRF token after long sessions or sleep (#310), Inquire embeddings not being generated when auto-summarization is enabled (#305), and the Account page's API token modals not opening (#308); adds a timeout so stalled uploads fail into the recovery path and a warning before leaving the page mid-upload. **Full release notes on the [GitHub release page](https://github.com/murtaza-nasir/speakr/releases/tag/v0.9.1-alpha).**
+
+### v0.9.0-alpha highlights (the major feature release this patches)
+
+**The first non-patch release in the v0.8 line.** Three big user-facing themes: capturing audio is now multi-platform and properly documented, the mobile app is a first-class member of the design system, and the upload modal stops feeling like a desktop card pasted onto a phone. **Full release notes on the [GitHub release page](https://github.com/murtaza-nasir/speakr/releases/tag/v0.9.0-alpha).**
+
+**System Audio & Multi-Input Recording**
+- Per-OS help guide auto-opens for the right platform (macOS BlackHole + Multi-Output Device, Windows "Share system audio", Linux pavucontrol + `pactl module-virtual-source` one-liner)
+- New Input devices picker: pick a primary mic AND an optional "Also mix in" secondary device; Web Audio mixes both into one track for capturing both sides of a meeting
+- Toggle to disable Chrome's echo cancellation / noise suppression / auto-gain (needed for monitor-source capture)
+- Virtual audio device discovery (BlackHole, Loopback, VB-Cable, Voicemeeter, Stereo Mix, Pulse / PipeWire monitors)
+- Privacy notes section flags the trade-offs honestly with concrete mitigations
+
+**Stats Tab**
+- New per-recording tab: total length, speaker count, turns, words at the top; per-speaker time / % / turns / words / WPM table; silence row
+- Available on desktop right-rail tabs and mobile bottom-nav More overflow
+
+**Upload Modal Redesign**
+- Real modal overlay (not full-screen takeover), progressive disclosure of Options behind a chip summary, inline file preview with duration probe, sticky modal-footer Upload action, last-used tag/folder/language auto-restore with clearable chips, calmer recording buttons
+- Mobile: full-width bottom-sheet with drag-to-dismiss
+
+**Mobile UI**
+- Bottom navigation (Summary / Transcript / Chat / More), contextual icons in the chevron row, edge-to-edge content, sticky speaker pills, sticky editor Cancel/Save footer, audio player polish (volume slider rotation fix, popover anchored upward), progress queue as a bottom sheet anchored above the player
+
+**Inquire mode** "+ New Recording" now opens the upload modal directly via `?upload=1` instead of dumping you on the list.
+
+**Design system unification** brought 22 modals onto shared `.modal-*` primitives, `.btn` + `.field` everywhere, dark-mode select theming, header consolidation, sidebar redesign, floating dockable chat panel.
+
+**Backend & infra**: Webhooks Phase 1–3 with HMAC + retry + SSRF guard, server-side recording sessions (hours-long ceiling, resume-on-reload), IDOR fixes for folder / tag ownership, eager-loading and batch query performance work.
+
+**Localization** refreshed across en, fr, de, es, ru, zh, pt-BR.
+
 ---
 
-## What's New?
+**Older releases:** see the [GitHub Releases page](https://github.com/murtaza-nasir/speakr/releases) for tagged versions, or the [release history on the docs site](https://murtaza-nasir.github.io/speakr/#latest-updates) for narrative changelog entries going back to earlier v0.x lines.
 
-###  Latest Release (Version 0.5.1)
-* **Inquire Mode (Experimental):** Revolutionary AI-powered search across all your recordings! Ask questions like "What decisions were made about the marketing budget?" and get intelligent answers with context from relevant conversations. Perfect for finding insights across multiple meetings, interviews, or sessions.
-* **Advanced Tagging System:** Organize recordings with multiple tags, each with custom summarization prompts and ASR defaults
-* **Enhanced ASR Integration:** Configure language and speaker detection directly from the UI with automatic participant extraction
-* **Word Document Export:** Download summaries and notes as beautifully formatted .docx files
-* **Tag-based Search:** Filter recordings instantly using tags (e.g., `tag:meeting date:2025`)
-* **Improved UI:** Better theme consistency, reorganized layouts with icons, and compact responsive design
-* **Configurable Processing:** Respect chunk size settings and improved audio format handling
-
-<details>
-<summary><strong>Previous Version History</strong></summary>
-
-### Version 0.4.2
-* **Large File Chunking Support:** Automatically splits large audio files to work with transcription services that have file size limits (e.g., OpenAI's 25MB limit)
-* **Optimized File Processing:** Improved efficiency by minimizing file conversions and using compressed formats
-* **Enhanced Security:** Strengthened CSRF protection and fixed session timeout issues
-* **Improved Recording Reliability:** Addressed several bugs related to in-browser recording
-
-### Version 0.4.1 
-* **Secure Sharing System:** Share transcriptions via public links with customizable permissions
-* **Enhanced Recording & Note-Taking:** Redesigned recording interface with a real-time notepad
-* **Advanced Speaker Diarization:** AI-powered speaker detection and saved speaker profiles
-* **"Black hole" Directory:** Feature for automatic, hands-free audio file processing
-* **Transcript Editing:** Manually edit and correct transcriptions
-* **Clickable Timestamps:** Navigate audio by clicking timestamps in the transcript
-* **Streaming Chat Responses:** More interactive and responsive AI chat
-
-</details>
-
----
 ## Screenshots
 
-
-<table align="center" style="width:100%;" border="0" cellpadding="10" cellspacing="0">
+<table align="center" border="0">
   <tr>
-    <td align="center" width="50%">
-      <img src="static/img/main2.png" alt="Main" width="90%"/>
+    <td align="center">
+      <img src="docs/assets/images/screenshots/main-view-chat-notes.png" alt="Main view with chat and notes" width="400"/>
+      <br><em>Main view with floating chat and notes</em>
     </td>
-    <td align="center" width="50%">
-      <img src="static/img/multilingual-support.png" alt="Multilingual" width="90%"/>
+    <td align="center">
+      <img src="docs/assets/images/screenshots/main-view-video.png" alt="Video playback" width="400"/>
+      <br><em>Video playback synced to the transcript</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/assets/images/screenshots/inquire-semantic-search.png" alt="Semantic search" width="400"/>
+      <br><em>Ask questions across all your recordings</em>
+    </td>
+    <td align="center">
+      <img src="docs/assets/images/screenshots/main-view-stats.png" alt="Recording stats" width="400"/>
+      <br><em>Per-recording stats and speaker breakdown</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/assets/images/screenshots/mobile-summary.png" alt="Mobile summary" width="220"/>
+      <br><em>On mobile: summary with bottom navigation</em>
+    </td>
+    <td align="center">
+      <img src="docs/assets/images/screenshots/mobile-transcript.png" alt="Mobile transcript" width="220"/>
+      <br><em>On mobile: transcript in bubble view</em>
     </td>
   </tr>
 </table>
 
----
-<details><summary><strong>Transcription & chat</strong></summary>
-<p align="center">
-  <img src="static/img/transcription-chat-bubble-view.png" alt="Transcription and Chat" width="400"/>
-  <br>
-  <em>Integrated Chat</em>
-</p>
-</details>
-<details><summary><strong>Tag based custom summarization prompts (tags)</strong></summary>
-<p align="center">
-  <img src="static/img/tags.png" alt="Transcription and Chat" width="400"/>
-  <br>
-  <em>Create tags for different use-cases (meetings, gamenight, patient interview, etc.) for quick customized summaries</em>
-</p></details>
-<details><summary><strong>Light & dark</strong></summary>
-<table align="center" style="width:100%;" border="0" cellpadding="10" cellspacing="0">
-  <tr>
-    <td align="center" width="50%">
-      <img src="static/img/light-mode.png" alt="Light Mode" width="90%"/>
-      <br><em>Light</em>
-    </td>
-    <td align="center" width="50%">
-      <img src="static/img/dark-mode.png" alt="Dark Mode" width="90%"/>
-      <br><em>Dark</em>
-    </td>
-  </tr>
-</table>
-</details>
-
-<details><summary><strong>Transcription views</strong></summary>
-<table align="center" style="width:100%;" border="0" cellpadding="10" cellspacing="0">
-  <tr>
-    <td align="center" width="50%">
-      <img src="static/img/simple-transcription-view.png" alt="Simple View" width="90%"/>
-      <br><em>Simple</em>
-    </td>
-    <td align="center" width="50%">
-      <img src="static/img/transcription-bubble-view.png" alt="Bubble View" width="90%"/>
-      <br><em>Bubble</em>
-    </td>
-  </tr>
-</table>
-</details>
-
-<details><summary><strong>Speaker identification</strong></summary>
-<table align="center" style="width:100%;" border="0" cellpadding="10" cellspacing="0">
-  <tr>
-    <td align="center" width="33%">
-      <img src="static/img/intuitive-speaker-identification.png" alt="AI-assisted" width="90%"/>
-      <br><em>AI-assisted</em>
-    </td>
-    <td align="center" width="33%">
-      <img src="static/img/manual-auto-speaker-identification.png" alt="Manual & Auto" width="90%"/>
-      <br><em>Manual & Auto</em>
-    </td>
-    <td align="center" width="33%">
-      <img src="static/img/speaker-suggestions.png" alt="Suggestions" width="90%"/>
-      <br><em>Saved Suggestions</em>
-    </td>
-  </tr>
-</table>
-</details>
-
-<details><summary><strong>Recordings & notes</strong></summary>
-<table align="center" style="width:100%;" border="0" cellpadding="10" cellspacing="0">
-  <tr>
-    <td align="center" width="33%">
-      <img src="static/img/rec1.png" alt="Options" width="90%"/>
-      <br><em>Recording Options</em>
-    </td>
-    <td align="center" width="33%">
-      <img src="static/img/rec2.png" alt="Mic" width="90%"/>
-      <br><em>Mic/System Audio</em>
-    </td>
-    <td align="center" width="33%">
-      <img src="static/img/rec3.png" alt="Both" width="90%"/>
-      <br><em>Mic + System Audio</em>
-    </td>
-  </tr>
-</table>
-</details>
-
----
-
-## Core Features
-
-* **Self-Hosted and Private:** Keep full control over your data by hosting Speakr on your own server.
-* **Inquire Mode (Experimental):** Search and chat across all your recordings using AI-powered semantic search. Ask questions about any topic and get intelligent answers with relevant context from your entire audio library.
-* **Advanced Transcription & Diarization:** Get accurate transcripts with optional AI-powered speaker identification (diarization) to know who said what.
-* **AI-Powered Insights:** Automatically generate titles and summaries for your recordings. Use the integrated chat to ask questions and pull insights directly from the transcript.
-* **Install as a PWA App:** Install on your phone for quick and easy recordings and note capture. 
-* **Versatile Recording & Upload:** Upload existing audio files or record directly in the browser or PWA app. Capture audio from your microphone, your system's audio (e.g., for an online meeting), or both simultaneously.
-* **Automated Processing:** Designate a "black hole" directory for drag-and-drop batch processing of audio files.
-* **Secure Sharing:** Create shareable links for your transcripts with granular controls, allowing you to include or exclude summaries and notes.
-* **Customizable AI:** Configure the specific AI models, API endpoints (compatible with OpenAI, OpenRouter, local models), and custom prompts for summarization and chat.
-* **Multi-User Support:** Includes a complete user management system with an admin dashboard.
-
-<table align="center" style="width:100%;" border="0" cellpadding="10" cellspacing="0">
-  <tr>
-    <td align="center" width="33%">
-      <img src="static/img/rec1.png" alt="Transcription and Chat" width="90%"/>
-    </td>
-    <td align="center" width="33%">
-      <img src="static/img/rec3.png" alt="Speaker Identification" width="90%"/>
-    </td>
-    <td align="center" width="33%">
-      <img src="static/img/intuitive-speaker-identification.png" alt="Speaker Identification" width="90%"/>
-    </td>
-  </tr>
-</table>
-
----
-
-## Getting Started
-
-The recommended setup method uses Docker, which is simple and fast.
-
-<details>
-<summary><strong>Easy Setup: Docker Compose (Recommended)</strong></summary>
-
-You only need Docker installed for this method; you do not need to clone the repository.
-
-1.  **Create `docker-compose.yml`**
-    Create a file named `docker-compose.yml` and add the following content:
-    ```yaml
-    services:
-      app:
-        image: learnedmachine/speakr:latest
-        container_name: speakr
-        restart: unless-stopped
-        ports:
-          - "8899:8899"
-        env_file:
-          - .env
-        volumes:
-          - ./uploads:/data/uploads
-          - ./instance:/data/instance
-    ```
-
-2.  **Create Configuration (`.env`) File**
-    Create a file named `.env` in the same directory. Your configuration will depend on whether you need speaker identification (diarization).
-
-    * **Option A: Standard Whisper API (No Speaker Diarization)**
-        This is the simplest method and works with any OpenAI Whisper-compatible API (like OpenAI, OpenRouter, or local LLMs).
-
-        ```dotenv
-        # --- Text Generation Model (uses /chat/completions endpoint) ---
-        TEXT_MODEL_BASE_URL=[https://openrouter.ai/api/v1](https://openrouter.ai/api/v1)
-        TEXT_MODEL_API_KEY=your_openrouter_api_key
-        TEXT_MODEL_NAME=openai/gpt-4o-mini
-
-        # --- Transcription Service (uses /audio/transcriptions endpoint) ---
-        TRANSCRIPTION_BASE_URL=[https://api.openai.com/v1](https://api.openai.com/v1)
-        TRANSCRIPTION_API_KEY=your_openai_api_key
-        WHISPER_MODEL=whisper-1
-        
-        # --- Large File Chunking (for endpoints with file size limits) ---
-        ENABLE_CHUNKING=true
-        CHUNK_LIMIT=20MB           # Size-based chunking (legacy CHUNK_SIZE_MB also works)
-        # CHUNK_LIMIT=1200s        # Alternative: Duration-based chunking (20 minutes)
-
-        # --- Application Settings ---
-        ALLOW_REGISTRATION=false
-        ADMIN_USERNAME=admin
-        ADMIN_EMAIL=admin@example.com
-        ADMIN_PASSWORD=changeme
-        
-        # --- Inquire Mode (Experimental - AI search across all recordings) ---
-        # ENABLE_INQUIRE_MODE=true
-        
-        # --- Docker Settings ---
-        SQLALCHEMY_DATABASE_URI=sqlite:////data/instance/transcriptions.db
-        UPLOAD_FOLDER=/data/uploads
-        ```
-
-    * **Option B: ASR Webservice (With Speaker Diarization)**
-        This method enables speaker identification but requires running a separate ASR webservice container. See the **Advanced Configuration** section below for details on setting up the ASR service.
-
-        ```dotenv
-        # --- Text Generation Model (uses /chat/completions endpoint) ---
-        TEXT_MODEL_BASE_URL=[https://openrouter.ai/api/v1](https://openrouter.ai/api/v1)
-        TEXT_MODEL_API_KEY=your_openrouter_api_key
-        TEXT_MODEL_NAME=openai/gpt-4o-mini
-
-        # --- Transcription Service (uses /asr endpoint) ---
-        USE_ASR_ENDPOINT=true
-        ASR_BASE_URL=http://your_asr_host:9000  # URL of your running ASR webservice
-        # Speaker diarization is automatically enabled with ASR
-        # Optional overrides (defaults shown):
-        # ASR_MIN_SPEAKERS=1
-        # ASR_MAX_SPEAKERS=5
-
-        # --- Application Settings ---
-        ALLOW_REGISTRATION=false
-        ADMIN_USERNAME=admin
-        ADMIN_EMAIL=admin@example.com
-        ADMIN_PASSWORD=changeme
-        
-        # --- Inquire Mode (Experimental - AI search across all recordings) ---
-        # ENABLE_INQUIRE_MODE=true
-        
-        # --- Docker Settings ---
-        SQLALCHEMY_DATABASE_URI=sqlite:////data/instance/transcriptions.db
-        UPLOAD_FOLDER=/data/uploads
-        ```
-
-3.  **Start the Application**
-    After editing your `.env` file with your API keys and settings, run the following command:
-    ```bash
-    docker compose up -d
-    ```
-    Access the application at `http://localhost:8899`. The admin user will be created on the first run.
-
-</details>
-
-<details>
-<summary><strong>Advanced Setup: Build from Source</strong></summary>
-
-Follow these steps if you want to modify the code or build the Docker image yourself.
-
-1.  **Clone the Repository:**
-    ```bash
-    git clone [https://github.com/murtaza-nasir/speakr.git](https://github.com/murtaza-nasir/speakr.git)
-    cd speakr
-    ```
-2.  **Create Configuration Files:**
-    Copy the example files. Use `config/env.whisper.example` for the standard API method or `config/env.asr.example` for the ASR webservice method.
-    ```bash
-    cp docker-compose.example.yml docker-compose.yml
-    cp config/env.whisper.example .env # Or cp config/env.asr.example .env
-    ```
-    Edit the `.env` file with your custom settings and API keys.
-
-3.  **Build and Start:**
-    ```bash
-    docker compose up -d --build
-    ```
-</details>
-
----
-
-## Usage Guide
-
-1.  **Login:** Access the application (e.g., `http://localhost:8899`) and log in. The admin account is created from the `.env` variables on the first launch.
-2.  **Set Preferences (Recommended):** Navigate to your **Account** page to set your default language, customize the AI summarization prompt, and add professional context to improve chat results.
-3.  **Add a Recording:**
-    * **Upload:** Drag and drop an audio file onto the dashboard or use the **New Recording** page.
-    * **Record:** Use the in-browser recorder. You can record your mic, system audio, or both. **Note:** To capture system audio (e.g., from a meeting), you must share a **browser tab** or your **entire screen** and ensure the **"Share audio"** checkbox is enabled.
-    * **Automated:** If enabled, simply drop files into the monitored "black hole" directory.
-4.  **Interact with Your Transcript:**
-    * From the gallery, click a recording to view its details.
-    * Read the transcript, listen to the audio, and review the AI-generated summary.
-    * Edit metadata like titles and participants.
-    * Use the **Chat** panel to ask questions about the content.
-5.  **Identify Speakers (Diarization):**
-    * If you used the ASR method with diarization enabled, click the **Identify Speakers** button.
-    * In the modal, assign names to the detected speakers (e.g., `SPEAKER 00`, `SPEAKER 01`). You can use the **Auto Identify** feature to let the AI suggest names based on the conversation.
-6.  **Use Inquire Mode (Experimental - optional):**
-    * **Enable it first:** Uncomment `ENABLE_INQUIRE_MODE=true` in your `.env` file and restart the application
-    * Click the **Inquire** button in the header to enter semantic search mode
-    * Ask questions like "What were the main action items discussed?" or "Who mentioned the budget concerns?"
-    * The AI will search across all your recordings and provide answers with relevant context
-    * Use filters to search specific recordings, speakers, or date ranges
-    * Perfect for finding insights across multiple meetings or discovering patterns in your conversations
----
-<details>
-<summary><strong>Advanced Tagging System</strong></summary>
-Speakr's tagging system allows you to organize recordings and customize their processing with tag-specific prompts and settings. Tags can be assigned to recordings to categorize them (e.g., "Meeting", "Interview", "Legal", "Medical") and each tag can have its own custom summarization prompt and ASR defaults.
-
-### Key Features
-
-#### Custom Summarization Prompts
-Each tag can have its own custom prompt that gets applied automatically when generating summaries. This is incredibly powerful for different use cases:
-- **Legal depositions** need case synopsis and key issues
-- **Medical consultations** need symptoms, diagnosis, and treatment plans  
-- **Team meetings** need action items and decisions
-- **Interviews** need candidate assessment and key qualifications
-
-#### Combining Multiple Tags
-You can assign multiple tags to a recording, and their custom prompts will be combined in priority order. For example:
-- Tag 1: "Legal" - Adds legal formatting requirements
-- Tag 2: "Deposition" - Adds deposition-specific sections
-- Tag 3: "Urgent" - Adds priority flagging
-
-The prompts are merged based on tag selection order, allowing you to build complex summarization workflows from modular tag components.
-
-#### ASR Configuration per Tag
-Tags can also define default settings for the ASR service:
-- **Language**: Set a specific language for transcription (e.g., "Spanish" for all "Cliente" tagged recordings)
-- **Speaker Count**: Define min/max speakers (e.g., exactly 2 speakers for "Interview" tags)
-
-### Configuration Precedence
-
-Settings are applied in this order (highest to lowest precedence):
-1. **Upload Screen Advanced Options** - User's manual selections in the UI
-2. **Tag Defaults** - Settings configured in the tag
-3. **Environment Variables** - System-wide defaults from `.env` file
-4. **Auto-detection** - ASR service's automatic detection
-
-This hierarchy ensures flexibility while maintaining sensible defaults.
-
-### Writing Effective Summarization Prompts
-
-#### Best Practices
-1. **Be Specific and Detailed**: Don't just ask for a "summary" - specify exactly what you want
-2. **Provide Structure**: Define clear sections and formatting
-3. **Include Examples**: Show the AI exactly how you want the output formatted
-4. **Request Completeness**: Ask for "all important nuances" to avoid missing details
-
-#### Example Prompts
-
-**Legal Deposition Prompt:**
-```
-Summarize this transcript in extreme detail. Identify the key issues discussed. 
-First, give me the case synopsis. Then give me the minutes. Then, give me the 
-key issues discussed. Then, any key takeaways. Then, any next steps. Then, 
-all important things that I didn't ask for but that need to be recorded. 
-Make sure every important nuance is covered.
-
-Example Format:
-## Case: ABC vs XYZ
-The case is about [brief description]. The synopsis is [detailed overview].
-
-**Participants:**  
-- [Name 1] - [Role]
-- [Name 2] - [Role]
-
----
-### Minutes
-
-**1. Introduction and Overview:**
-- [Participant] expressed [key point with full context]
-- Discussion regarding [topic with specific details]
-
-### Key Issues Discussed
-1. **[Issue Title]:** [Comprehensive description with all nuances]
-2. **[Issue Title]:** [Full details including participant positions]
-
-### Key Takeaways
-- [Specific, actionable takeaway with context]
-
-### Next Steps
-- [Concrete action item with responsible party and timeline]
-
-### Additional Important Information
-- [Any critical details not covered above]
-```
-
-**Meeting Minutes Prompt:**
-```
-Summarize this transcript in extreme detail. First, give me minutes. Then, 
-give me the key issues discussed. Then, any key takeaways. Then, any next 
-steps. Then, all important things that I didn't ask for but that need to be 
-recorded. Make sure every important nuance is covered.
-
-Example Format:
-### Minutes
-
-**Meeting Participants:**  
-- [Name] - [Department/Role]
-- [Name] - [Department/Role]
-
-**Date:** [Meeting Date]
-**Duration:** [Length]
-
----
-
-**1. Introduction and Overview:**
-- [Participant] opened the meeting by [specific details]
-- Key objectives outlined: [list each]
-
-**2. [Topic Name]:**
-- [Participant] presented [detailed summary of presentation]
-- Discussion points raised:
-  • [Specific point with who raised it]
-  • [Counter-arguments or agreements]
-- Decision reached: [Exact decision with rationale]
-
-### Key Issues Discussed
-1. **[Issue]:** [Complete description with all perspectives presented]
-2. **[Issue]:** [Full context including constraints and opportunities]
-
-### Key Takeaways
-- [Specific conclusion with supporting details]
-- [Important realization or learning]
-
-### Next Steps
-- [Action item] - Owner: [Name] - Due: [Date]
-- [Action item] - Owner: [Name] - Due: [Date]
-
-### Additional Notes
-- [Any off-topic but important mentions]
-- [Future considerations discussed]
-```
-
-#### Tips for Custom Prompts
-- **Use consistent formatting** with markdown headers and bold text
-- **Request specific information** relevant to your use case
-- **Include participant identification** when speaker diarization is enabled
-- **Ask for "all important nuances"** to ensure nothing is missed
-- **Provide clear examples** of the desired output format
-- **Structure sections logically** for easy scanning
-- **Include catch-all sections** like "Additional Important Information"
-
-### Setting Up Tags
-
-1. **Create a Tag**: Go to Account Settings → Tag Management and create a new tag
-2. **Configure Custom Prompt** (optional): Add your detailed summarization prompt
-3. **Set ASR Defaults** (optional): Configure language and speaker settings
-4. **Apply to Recordings**: Select tags when uploading or recording
-5. **Combine Tags**: Select multiple tags to merge their prompts
-
-Tags make Speakr very flexible, allowing you to maintain consistent formatting across similar recordings while adapting to different use cases with just a click.
-</details>
-
----
-<details>
-<summary><strong>Advanced Configuration & Technical Details</strong></summary>
-
-**For detailed deployment instructions and information about the various API's used, see the [Deployment Guide](docs/DEPLOYMENT_GUIDE.md#configuration-options)**
-
-The recommended method is to use the pre-built Docker image, which is fast and simple. This is explained above. 
-
-## Automated File Processing
-
-Speakr includes a powerful "black hole" directory monitoring feature that automatically processes audio files without manual uploads. This is perfect for batch processing scenarios where you want to drop files into a directory and have them automatically transcribed.
-
-### How It Works
-
-1. **File Monitoring:** Speakr monitors a designated directory for new audio files
-2. **Automatic Detection:** When new audio files are detected, they are automatically queued for processing
-3. **File Stability Check:** Files are checked for stability (not being written to) before processing
-4. **Automatic Processing:** Files are moved to the uploads directory and processed using your configured transcription settings
-5. **Database Integration:** Processed recordings appear in your gallery with the title "Auto-processed - [filename]"
-
-**For detailed instructions on setting this up, see the [Deployment Guide](docs/DEPLOYMENT_GUIDE.md#automated-file-processing-black-hole-directory)**
-
-</details>
-
------
+**[View Full Screenshot Gallery →](https://murtaza-nasir.github.io/speakr/screenshots)**
+
+## Technology Stack
+
+- **Backend**: Python/Flask with SQLAlchemy
+- **Frontend**: Vue.js 3 with Tailwind CSS
+- **AI/ML**: OpenAI Whisper, OpenRouter, Ollama support
+- **Database**: SQLite (default) or PostgreSQL
+- **Deployment**: Docker, Docker Compose
+
+## Roadmap
+
+### Completed
+- Speaker voice profiles with AI-powered identification (v0.5.9)
+- Group workspaces with shared recordings (v0.5.9)
+- PWA enhancements with offline support and background sync (v0.5.10)
+- Multi-user job queue with fair scheduling (v0.6.0)
+- SSO integration with OIDC providers (v0.7.0)
+- Token usage tracking and per-user budgets (v0.7.2)
+- Connector-based transcription architecture with auto-detection (v0.8.0)
+- Comprehensive REST API with Swagger UI documentation (v0.8.0)
+- Video retention with in-browser video playback (v0.8.11)
+- Parallel uploads with duplicate detection (v0.8.11)
+- Fullscreen video mode with live subtitles (v0.8.14)
+- Custom vocabulary and transcription hints (v0.8.14)
+
+### Near-term
+- Quick language switching for transcription
+- Automated workflow triggers
+
+### Long-term
+- Plugin system for custom integrations
+- End-to-end encryption option
+
+### Reporting Issues
+
+- [Report bugs](https://github.com/murtaza-nasir/speakr/issues)
+- [Request features](https://github.com/murtaza-nasir/speakr/discussions)
 
 ## License
 
@@ -527,12 +345,21 @@ This project is **dual-licensed**:
 
 **You must choose one of these licenses** under which to use, modify, or distribute this software. If you are using or distributing the software without a commercial license agreement, you must adhere to the terms of the AGPLv3.
 
-## Roadmap
-
-Speakr is in active development. Planned features include a faster way to switch transcription languages on the fly.
-
 ## Contributing
 
-Feedback, bug reports, and feature suggestions are highly encouraged\! Please open an issue on the GitHub repository to share your thoughts.
+We welcome contributions to Speakr! There are many ways to help:
 
-**Note on Code Contributions:** Should the project begin formally accepting external code contributions, a Contributor License Agreement (CLA) will be required.
+- **Bug Reports & Feature Requests**: [Open an issue](https://github.com/murtaza-nasir/speakr/issues)
+- **Discussions**: [Share ideas and ask questions](https://github.com/murtaza-nasir/speakr/discussions)
+- **Documentation**: Help improve our docs
+- **Translations**: Contribute translations for internationalization
+
+### Code Contributions
+
+By submitting a pull request, you agree to our [Contributor License Agreement (CLA)](CLA.md). This ensures we can maintain our dual-license model (AGPLv3 and Commercial). You retain copyright ownership of your contribution — the CLA simply grants us permission to include it in both the open source and commercial versions of Speakr. Our bot will post a reminder when you open a PR.
+
+**See our [Contributing Guide](CONTRIBUTING.md) for complete details on:**
+- How the CLA works and why we need it
+- Step-by-step contribution process
+- Development setup instructions
+- Coding standards and best practices
