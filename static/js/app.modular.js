@@ -2705,13 +2705,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             // Copy a metadata chip's value (currently the filename) to the clipboard.
+            // Mirrors the app's other copy actions: the async Clipboard API only
+            // works in a secure context (HTTPS/localhost), so fall back to a
+            // textarea + execCommand when served over plain HTTP — otherwise the
+            // click throws and silently does nothing.
             const copyMetaValue = (value) => {
                 if (!value) return;
-                navigator.clipboard.writeText(value).then(() => {
-                    showToast(t('detail.filenameCopied'), 'fa-check-circle', 2500, 'success');
-                }).catch(() => {
-                    setGlobalError('Failed to copy to clipboard');
-                });
+                const onOk = () => showToast(t('detail.filenameCopied'), 'fa-check-circle', 2500, 'success');
+                const fallback = () => {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = value;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        onOk();
+                    } catch (err) {
+                        setGlobalError('Failed to copy to clipboard');
+                    }
+                    document.body.removeChild(textArea);
+                };
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(value).then(onOk).catch(fallback);
+                } else {
+                    fallback();
+                }
             };
 
             // Upload queue computed properties
