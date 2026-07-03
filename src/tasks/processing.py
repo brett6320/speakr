@@ -1791,6 +1791,22 @@ def _merge_dual_channel(left_response, right_response, left_label, right_label):
     )
 
 
+def _dual_channel_labels(participants):
+    """Derive (left_label, right_label) for dual-channel from the participants.
+
+    First participant -> caller (left), second -> callee (right). Falls back to
+    generic 'Caller'/'Callee' when fewer than two distinct names are available,
+    including when both would collapse to the same label (which would make the
+    transcript ambiguous).
+    """
+    names = [p.strip() for p in (participants or '').split(',') if p.strip()]
+    left_label = names[0] if len(names) >= 1 else 'Caller'
+    right_label = names[1] if len(names) >= 2 else 'Callee'
+    if left_label == right_label:
+        left_label, right_label = 'Caller', 'Callee'
+    return left_label, right_label
+
+
 def transcribe_dual_channel(connector, source_filepath, language, hotwords,
                             initial_prompt, transcription_model, participants,
                             chunking_service, connector_specs):
@@ -1801,13 +1817,7 @@ def transcribe_dual_channel(connector, source_filepath, language, hotwords,
     second = callee), falling back to generic Caller/Callee when participants
     are not set. Returns a merged TranscriptionResponse.
     """
-    names = [p.strip() for p in (participants or '').split(',') if p.strip()]
-    left_label = names[0] if len(names) >= 1 else 'Caller'
-    right_label = names[1] if len(names) >= 2 else 'Callee'
-    # Guard against both channels collapsing to the same label (e.g. a single
-    # participant entered), which would make the transcript ambiguous.
-    if left_label == right_label:
-        left_label, right_label = 'Caller', 'Callee'
+    left_label, right_label = _dual_channel_labels(participants)
 
     left_path, right_path = split_stereo_channels(source_filepath)
     try:
