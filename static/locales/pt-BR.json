@@ -1641,6 +1641,8 @@
     "savedTemplateHelp": "Preenche o prompt inicial e as hotwords abaixo."
   },
   "detail": {
+    "copyFilename": "Copiar nome do arquivo",
+    "filenameCopied": "Nome do arquivo copiado",
     "hints": "Dicas",
     "hintsUsed": "Dicas de transcrição usadas nesta gravação",
     "syncAddedDate": "Sincronizar data",
