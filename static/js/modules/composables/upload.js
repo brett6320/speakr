@@ -42,7 +42,7 @@ export function useUpload(state, utils) {
         isProcessingActive, pollInterval, progressPopupMinimized, progressPopupClosed,
         maxFileSizeMB, chunkingEnabled, chunkingMode, chunkingLimit, maxConcurrentUploads,
         recordings, selectedRecording, totalRecordings, globalError,
-        selectedTagIds, uploadLanguage, uploadMinSpeakers, uploadMaxSpeakers, uploadHotwords, uploadInitialPrompt, uploadDualChannel, uploadTranscriptionModel, uploadPromptVariables, transcriptionModelOptions,
+        selectedTagIds, uploadLanguage, uploadMinSpeakers, uploadMaxSpeakers, uploadHotwords, uploadInitialPrompt, uploadDualChannel, uploadParticipants, uploadTranscriptionModel, uploadPromptVariables, transcriptionModelOptions,
         useAsrEndpoint, connectorSupportsDiarization, asrLanguage, asrMinSpeakers, asrMaxSpeakers,
         dragover, availableTags, uploadTagSearchFilter,
         // Folder state
@@ -391,6 +391,7 @@ export function useUpload(state, utils) {
                         initial_prompt: uploadInitialPrompt.value,
                         transcription_model: uploadTranscriptionModel.value,
                         dual_channel: uploadDualChannel.value,
+                        participants: uploadParticipants.value,
                         prompt_variables: { ...uploadPromptVariables },
                     };
                     item.folder_id = selectedFolderId.value;
@@ -520,6 +521,12 @@ export function useUpload(state, utils) {
             // Dual-channel (stereo call): caller=left, callee=right channel.
             const dualChannel = asrOpts.dual_channel != null ? asrOpts.dual_channel : uploadDualChannel.value;
             formData.append('dual_channel', dualChannel ? 'true' : 'false');
+
+            // Participant/speaker names entered at upload (comma-separated).
+            const participants = (asrOpts.participants != null ? asrOpts.participants : uploadParticipants.value) || '';
+            if (participants.trim()) {
+                formData.append('participants', participants.trim());
+            }
 
             // Per-recording prompt template variables (issue #253). Carry the
             // values either from a queued item's saved options or from the

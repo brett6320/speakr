@@ -526,6 +526,51 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Dual-channel (stereo call) transcription: left channel = caller,
             // right channel = callee, mapped to the first two participants.
             const uploadDualChannel = ref(false);
+            // Freeform participant/speaker names entered at upload (comma-separated),
+            // with live autocomplete suggestions from the saved-speaker library.
+            const uploadParticipants = ref('');
+            const participantSuggestions = ref([]);
+            const showParticipantSuggestions = ref(false);
+            let _participantSearchTimer = null;
+            // Search the saved-speaker library for the token currently being typed
+            // (the text after the last comma).
+            const searchParticipantSuggestions = () => {
+                if (_participantSearchTimer) clearTimeout(_participantSearchTimer);
+                const parts = uploadParticipants.value.split(',');
+                const token = parts[parts.length - 1].trim();
+                if (!token) {
+                    participantSuggestions.value = [];
+                    showParticipantSuggestions.value = false;
+                    return;
+                }
+                _participantSearchTimer = setTimeout(async () => {
+                    try {
+                        const resp = await fetch(`/speakers/search?q=${encodeURIComponent(token)}`);
+                        if (!resp.ok) { participantSuggestions.value = []; return; }
+                        const data = await resp.json();
+                        // Drop names already chosen earlier in the field.
+                        const chosen = new Set(parts.slice(0, -1).map(s => s.trim().toLowerCase()));
+                        participantSuggestions.value = data
+                            .map(s => s.name)
+                            .filter(n => n && !chosen.has(n.toLowerCase()));
+                        showParticipantSuggestions.value = participantSuggestions.value.length > 0;
+                    } catch (e) {
+                        participantSuggestions.value = [];
+                    }
+                }, 200);
+            };
+            // Complete the current token with a picked suggestion and leave a
+            // trailing ", " so the user can keep adding participants.
+            const applyParticipantSuggestion = (name) => {
+                const parts = uploadParticipants.value.split(',');
+                parts[parts.length - 1] = name;
+                uploadParticipants.value = parts.map(p => p.trim()).filter(Boolean).join(', ') + ', ';
+                participantSuggestions.value = [];
+                showParticipantSuggestions.value = false;
+            };
+            const hideParticipantSuggestions = () => {
+                setTimeout(() => { showParticipantSuggestions.value = false; }, 150);
+            };
             // Saved transcription initial-prompt templates (#309), shown as a
             // picker above the initial-prompt field in the upload modal.
             const initialPromptTemplates = ref([]);
@@ -1599,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 maxConcurrentUploads, recordingDisclaimer, showRecordingDisclaimerModal, pendingRecordingMode,
                 uploadDisclaimer, showUploadDisclaimerModal,
                 customBanner, showBanner,
-                showAdvancedOptions, userTranscriptionLanguage, uploadLanguage, uploadMinSpeakers, uploadMaxSpeakers, uploadHotwords, uploadInitialPrompt, uploadDualChannel, initialPromptTemplates, applyInitialPromptTemplate, showHintsPopover, uploadTranscriptionModel, uploadPromptVariables, showPromptVariablesPanel, selectedPromptVariables, reprocessAvailableVariables, transcriptionModelOptions,
+                showAdvancedOptions, userTranscriptionLanguage, uploadLanguage, uploadMinSpeakers, uploadMaxSpeakers, uploadHotwords, uploadInitialPrompt, uploadDualChannel, uploadParticipants, participantSuggestions, showParticipantSuggestions, searchParticipantSuggestions, applyParticipantSuggestion, hideParticipantSuggestions, initialPromptTemplates, applyInitialPromptTemplate, showHintsPopover, uploadTranscriptionModel, uploadPromptVariables, showPromptVariablesPanel, selectedPromptVariables, reprocessAvailableVariables, transcriptionModelOptions,
                 availableTags, selectedTagIds, uploadTagSearchFilter,
                 availableFolders, selectedFolderId, foldersEnabled, filterFolder,
 

@@ -743,6 +743,28 @@
                         </div>
                     </div>
 
+                    <!-- Speakers / participants: freeform names with live suggestions
+                         from the saved-speaker library. -->
+                    <div class="rounded-md border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-3 relative">
+                        <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" v-text="t('form.participants')"></label>
+                        <input v-model="uploadParticipants" type="text"
+                               @input="searchParticipantSuggestions"
+                               @focus="searchParticipantSuggestions"
+                               @blur="hideParticipantSuggestions"
+                               :placeholder="t('form.participantsPlaceholder')"
+                               autocomplete="off"
+                               class="w-full px-2 py-1 text-sm bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-primary)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--ring-focus)]">
+                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5" v-text="t('form.participantsHelp')"></p>
+                        <ul v-if="showParticipantSuggestions && participantSuggestions.length"
+                            class="absolute z-50 left-3 right-3 mt-1 max-h-40 overflow-auto bg-[var(--bg-primary)] border border-[var(--border-primary)] rounded-md shadow-lg">
+                            <li v-for="name in participantSuggestions" :key="name"
+                                @mousedown.prevent="applyParticipantSuggestion(name)"
+                                class="px-3 py-1.5 text-sm cursor-pointer hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)] flex items-center gap-2">
+                                <i class="fas fa-user text-[var(--text-muted)] text-[10px]"></i><span>${ name }</span>
+                            </li>
+                        </ul>
+                    </div>
+
                     <!-- Dual-channel (stereo call): left channel = caller, right = callee,
                          mapped to the first two participants. -->
                     <div class="rounded-md border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-3">

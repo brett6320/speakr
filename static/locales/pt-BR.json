@@ -818,6 +818,8 @@
     "createFolderTitle": "Criar pasta"
   },
   "form": {
+    "participantsPlaceholder": "ex.: Alice, Bob",
+    "participantsHelp": "Nomes das pessoas na gravação (separados por vírgula). As sugestões vêm dos seus falantes salvos.",
     "dualChannel": "Canal duplo (chamada estéreo)",
     "dualChannelHelp": "Transcreve cada canal estéreo separadamente: esquerda = quem liga, direita = quem recebe, mapeados para os dois primeiros participantes.",
     "auto": "Automático",

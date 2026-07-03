@@ -818,6 +818,8 @@
     "createFolderTitle": "创建文件夹"
   },
   "form": {
+    "participantsPlaceholder": "例如：Alice, Bob",
+    "participantsHelp": "录音中的人员姓名（用逗号分隔）。建议来自您保存的讲话人。",
     "dualChannel": "双声道（立体声通话）",
     "dualChannelHelp": "分别转录每个立体声声道：左=主叫，右=被叫，映射到前两位参与者。",
     "auto": "自动",

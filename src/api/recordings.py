@@ -2524,6 +2524,8 @@ def upload_file():
         # Get optional user-provided title and meeting_date
         user_title = request.form.get('title')
         user_meeting_date = request.form.get('meeting_date')
+        # Optional participant/speaker names entered at upload (comma-separated).
+        participants = request.form.get('participants', '').strip() or None
 
         # Get file's lastModified timestamp from client (milliseconds since epoch)
         file_last_modified = request.form.get('file_last_modified')
@@ -2702,6 +2704,7 @@ def upload_file():
             file_size=final_file_size,
             status='PENDING',
             meeting_date=meeting_date,
+            participants=participants,
             user_id=current_user.id,
             mime_type=mime_type,
             audio_duration_seconds=audio_duration_seconds,

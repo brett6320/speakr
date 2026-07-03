@@ -818,6 +818,8 @@
     "createFolderTitle": "Créer un dossier"
   },
   "form": {
+    "participantsPlaceholder": "p. ex. Alice, Bob",
+    "participantsHelp": "Noms des personnes dans l'enregistrement (séparés par des virgules). Les suggestions proviennent de vos intervenants enregistrés.",
     "dualChannel": "Double canal (appel stéréo)",
     "dualChannelHelp": "Transcrit chaque canal stéréo séparément : gauche = appelant, droite = appelé, associés aux deux premiers participants.",
     "auto": "Auto",

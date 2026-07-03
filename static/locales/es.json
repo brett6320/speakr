@@ -818,6 +818,8 @@
     "createFolderTitle": "Crear carpeta"
   },
   "form": {
+    "participantsPlaceholder": "p. ej. Alice, Bob",
+    "participantsHelp": "Nombres de las personas en la grabación (separados por comas). Las sugerencias provienen de tus hablantes guardados.",
     "dualChannel": "Doble canal (llamada estéreo)",
     "dualChannelHelp": "Transcribe cada canal estéreo por separado: izquierda = emisor, derecha = receptor, asignados a los dos primeros participantes.",
     "auto": "Auto",

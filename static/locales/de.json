@@ -818,6 +818,8 @@
     "createFolderTitle": "Ordner erstellen"
   },
   "form": {
+    "participantsPlaceholder": "z. B. Alice, Bob",
+    "participantsHelp": "Namen der Personen in der Aufnahme (durch Komma getrennt). Vorschläge stammen aus deinen gespeicherten Sprechern.",
     "dualChannel": "Zweikanal (Stereo-Anruf)",
     "dualChannelHelp": "Transkribiert jeden Stereokanal separat: links = Anrufer, rechts = Angerufener, zugeordnet zu den ersten beiden Teilnehmern.",
     "auto": "Auto",

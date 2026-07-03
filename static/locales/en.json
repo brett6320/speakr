@@ -818,6 +818,8 @@
     "createFolderTitle": "Create Folder"
   },
   "form": {
+    "participantsPlaceholder": "e.g. Alice, Bob",
+    "participantsHelp": "Names of people in the recording (comma-separated). Suggestions come from your saved speakers.",
     "dualChannel": "Dual-channel (stereo call)",
     "dualChannelHelp": "Transcribe each stereo channel separately: left = caller, right = callee, mapped to the first two participants.",
     "auto": "Auto",
