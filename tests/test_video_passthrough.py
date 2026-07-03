@@ -192,11 +192,17 @@ class TestProcessingMainPath(unittest.TestCase):
                            "convert_if_needed should be in else branch after passthrough check")
 
     def test_chunking_skipped_when_passthrough(self):
-        """Chunking evaluates to False when video_passthrough_active."""
+        """Chunking evaluates to False when video_passthrough_active.
+
+        The guard now also short-circuits for dual-channel transcription, which
+        does its own per-channel chunking, so the condition is
+        `video_passthrough_active or dual_channel_active`.
+        """
         # Find the chunking decision area after the flag
         flag_pos = PROCESSING_MAIN.find('video_passthrough_active = is_video and VIDEO_PASSTHROUGH_ASR')
         after_flag = PROCESSING_MAIN[flag_pos:]
-        self.assertIn('if video_passthrough_active:\n                should_chunk = False', after_flag)
+        self.assertIn('if video_passthrough_active or dual_channel_active:', after_flag)
+        self.assertIn('should_chunk = False', after_flag)
 
     def test_conversion_still_runs_for_non_passthrough(self):
         """convert_if_needed still runs when passthrough is off or file is audio."""
