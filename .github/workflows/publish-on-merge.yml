@@ -1,11 +1,12 @@
 name: Publish image on merge
 
-# On every merge to master, build and publish the full and lite images to GHCR
-# for linux/amd64 + linux/arm64. Rolling fork policy: each merge updates `latest`
-# (and `lite`) plus an immutable commit-sha tag. Gated on the test suite.
+# On every merge to the default branch (master or main), build and publish the
+# full and lite images to GHCR for linux/amd64 + linux/arm64. Rolling fork
+# policy: each merge updates `latest` (and `lite`) plus an immutable commit-sha
+# tag. Gated on the test suite.
 on:
   push:
-    branches: [master]
+    branches: [master, main]
   workflow_dispatch:
 
 env:
