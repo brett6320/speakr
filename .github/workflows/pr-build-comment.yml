@@ -35,12 +35,12 @@ jobs:
         with:
           script: |
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            // React so the commenter sees it was picked up.
+            // 🚀 reaction signals the build has started.
             await github.rest.reactions.createForIssueComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               comment_id: context.payload.comment.id,
-              content: 'eyes'
+              content: 'rocket'
             });
             // Resolve the PR head SHA and publish a pending commit status against
             // it, which surfaces the build in the PR's checks section.
