@@ -440,6 +440,85 @@ export function useBulkOperations({
         }
     };
 
+    // =========================================
+    // Sync "added" date -> meeting/call date
+    // =========================================
+
+    // Single recording: set its created_at ("added" date) to its meeting_date.
+    const syncAddedDate = async (recordingId) => {
+        if (!recordingId) return;
+        try {
+            const response = await fetch(`/api/recordings/${recordingId}/sync-added-date`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to sync added date');
+            }
+
+            const rec = recordings.value.find(r => r.id === recordingId);
+            if (rec) rec.created_at = data.created_at;
+            if (selectedRecording.value && selectedRecording.value.id === recordingId) {
+                selectedRecording.value.created_at = data.created_at;
+            }
+
+            showToast('Added date set to meeting date', 'fa-calendar-check', 3000, 'success');
+        } catch (error) {
+            console.error('Sync added date error:', error);
+            setGlobalError(`Failed to sync added date: ${error.message}`);
+        }
+    };
+
+    // Bulk: set created_at = meeting_date for all selected recordings.
+    const bulkSyncAddedDate = async () => {
+        const ids = getSelectedIds();
+        if (ids.length === 0) return;
+
+        bulkActionInProgress.value = true;
+
+        try {
+            const response = await fetch('/api/recordings/sync-added-date', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({ recording_ids: ids })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to sync added dates');
+            }
+
+            // Server only syncs recordings that have a meeting_date; mirror that locally.
+            const affectedIds = new Set(data.affected_ids || []);
+            recordings.value.forEach(recording => {
+                if (affectedIds.has(recording.id)) {
+                    recording.created_at = recording.meeting_date;
+                }
+            });
+            if (selectedRecording.value && affectedIds.has(selectedRecording.value.id)) {
+                selectedRecording.value.created_at = selectedRecording.value.meeting_date;
+            }
+
+            const count = data.affected_count ?? affectedIds.size;
+            showToast(`${count} recording${count !== 1 ? 's' : ''} synced to meeting date`, 'fa-calendar-check', 3000, 'success');
+        } catch (error) {
+            console.error('Bulk sync added date error:', error);
+            setGlobalError(`Failed to sync added dates: ${error.message}`);
+        } finally {
+            bulkActionInProgress.value = false;
+        }
+    };
+
     return {
         // Modal state
         showBulkDeleteModal,
@@ -470,6 +549,10 @@ export function useBulkOperations({
         bulkToggleHighlight,
 
         // Bulk Folder
-        bulkAssignFolder
+        bulkAssignFolder,
+
+        // Sync added date
+        syncAddedDate,
+        bulkSyncAddedDate
     };
 }

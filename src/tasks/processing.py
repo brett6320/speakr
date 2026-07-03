@@ -26,7 +26,7 @@ from src.services.embeddings import process_recording_chunks
 from src.services.llm import is_using_openai_api, call_llm_completion, format_api_error_message, TEXT_MODEL_NAME, client, http_client_no_proxy, TokenBudgetExceeded
 from src.utils import extract_json_object, safe_json_loads
 from src.utils.ffprobe import get_codec_info, is_video_file, is_lossless_audio, FFProbeError
-from src.utils.ffmpeg_utils import convert_to_mp3, extract_audio_from_video as ffmpeg_extract_audio, compress_audio, FFmpegError, FFmpegNotFoundError
+from src.utils.ffmpeg_utils import convert_to_mp3, extract_audio_from_video as ffmpeg_extract_audio, compress_audio, split_stereo_channels, FFmpegError, FFmpegNotFoundError
 from src.utils.audio_conversion import convert_if_needed, ConversionResult
 from src.utils.error_formatting import format_error_for_storage
 from src.config.app_config import AUDIO_COMPRESS_UPLOADS, AUDIO_CODEC, AUDIO_BITRATE, VIDEO_PASSTHROUGH_ASR
@@ -1703,7 +1703,136 @@ def transcribe_chunks_with_connector(connector, filepath, filename, mime_type, l
             raise ChunkProcessingError(f"Chunked transcription failed: {str(e)}")
 
 
-def transcribe_with_connector(app_context, recording_id, filepath, original_filename, start_time, mime_type=None, language=None, diarize=None, min_speakers=None, max_speakers=None, tag_id=None, hotwords=None, initial_prompt=None, transcription_model=None):
+def _transcribe_one_channel(connector, filepath, filename, mime_type, language,
+                            hotwords, initial_prompt, transcription_model,
+                            chunking_service, connector_specs):
+    """Transcribe a single mono channel file with diarization OFF.
+
+    Chunks if the channel exceeds connector limits (timestamps are offset back
+    to absolute inside transcribe_chunks_with_connector); otherwise sends the
+    whole file. Returns a TranscriptionResponse.
+    """
+    from src.services.transcription import TranscriptionRequest, TranscriptionResponse
+
+    should_chunk = bool(chunking_service and chunking_service.needs_chunking(filepath, False, connector_specs))
+    if should_chunk:
+        result = transcribe_chunks_with_connector(
+            connector, filepath, filename, mime_type, language,
+            diarize=False, hotwords=hotwords, initial_prompt=initial_prompt,
+            transcription_model=transcription_model,
+        )
+        if isinstance(result, TranscriptionResponse):
+            return result
+        # Plain-text result: wrap it so the merge step has a uniform shape.
+        return TranscriptionResponse(text=result if isinstance(result, str) else '', segments=None)
+
+    with open(filepath, 'rb') as audio_file:
+        request = TranscriptionRequest(
+            audio_file=audio_file,
+            filename=filename,
+            mime_type=mime_type,
+            language=language,
+            diarize=False,
+            prompt=initial_prompt,
+            hotwords=hotwords,
+            model=transcription_model,
+        )
+        return connector.transcribe(request)
+
+
+def _merge_dual_channel(left_response, right_response, left_label, right_label):
+    """Merge two per-channel transcriptions into one, attributing each channel
+    to a fixed speaker (left=caller, right=callee).
+
+    Segments from both channels are concatenated and sorted by start time. Each
+    segment's speaker is forced to the channel's label regardless of what the
+    connector returned. If a channel produced only plain text (no segments), a
+    single segment covering the whole channel is synthesised so no text is lost.
+    """
+    from src.services.transcription import TranscriptionSegment, TranscriptionResponse
+
+    def _labelled_segments(response, label):
+        segs = []
+        if response and getattr(response, 'segments', None):
+            for seg in response.segments:
+                segs.append(TranscriptionSegment(
+                    text=seg.text,
+                    speaker=label,
+                    start_time=seg.start_time if seg.start_time is not None else 0.0,
+                    end_time=seg.end_time,
+                    confidence=getattr(seg, 'confidence', None),
+                    words=getattr(seg, 'words', None),
+                ))
+        elif response and (getattr(response, 'text', '') or '').strip():
+            segs.append(TranscriptionSegment(
+                text=response.text.strip(),
+                speaker=label,
+                start_time=0.0,
+                end_time=getattr(response, 'duration', None),
+            ))
+        return segs
+
+    merged_segments = _labelled_segments(left_response, left_label) + \
+        _labelled_segments(right_response, right_label)
+    # Sort by start time so caller/callee turns interleave chronologically.
+    merged_segments.sort(key=lambda s: s.start_time if s.start_time is not None else 0.0)
+
+    merged_text = "\n".join(f"{s.speaker}: {s.text}" for s in merged_segments)
+    speakers = [lbl for lbl in (left_label, right_label) if lbl]
+
+    base = left_response or right_response
+    return TranscriptionResponse(
+        text=merged_text,
+        segments=merged_segments,
+        language=getattr(base, 'language', None),
+        speakers=speakers,
+        provider=getattr(base, 'provider', None),
+        model=getattr(base, 'model', None),
+    )
+
+
+def transcribe_dual_channel(connector, source_filepath, language, hotwords,
+                            initial_prompt, transcription_model, participants,
+                            chunking_service, connector_specs):
+    """Split a stereo recording into caller (left) and callee (right) channels,
+    transcribe each independently with diarization off, and merge the result.
+
+    Speaker labels come from the recording's participants (first = caller,
+    second = callee), falling back to generic Caller/Callee when participants
+    are not set. Returns a merged TranscriptionResponse.
+    """
+    names = [p.strip() for p in (participants or '').split(',') if p.strip()]
+    left_label = names[0] if len(names) >= 1 else 'Caller'
+    right_label = names[1] if len(names) >= 2 else 'Callee'
+    # Guard against both channels collapsing to the same label (e.g. a single
+    # participant entered), which would make the transcript ambiguous.
+    if left_label == right_label:
+        left_label, right_label = 'Caller', 'Callee'
+
+    left_path, right_path = split_stereo_channels(source_filepath)
+    try:
+        current_app.logger.info(
+            f"Dual-channel: transcribing left='{left_label}' and right='{right_label}'"
+        )
+        left_response = _transcribe_one_channel(
+            connector, left_path, os.path.basename(left_path), 'audio/mpeg', language,
+            hotwords, initial_prompt, transcription_model, chunking_service, connector_specs,
+        )
+        right_response = _transcribe_one_channel(
+            connector, right_path, os.path.basename(right_path), 'audio/mpeg', language,
+            hotwords, initial_prompt, transcription_model, chunking_service, connector_specs,
+        )
+        return _merge_dual_channel(left_response, right_response, left_label, right_label)
+    finally:
+        for p in (left_path, right_path):
+            try:
+                if p and os.path.exists(p):
+                    os.remove(p)
+            except OSError:
+                pass
+
+
+def transcribe_with_connector(app_context, recording_id, filepath, original_filename, start_time, mime_type=None, language=None, diarize=None, min_speakers=None, max_speakers=None, tag_id=None, hotwords=None, initial_prompt=None, transcription_model=None, dual_channel=False):
     """
     Transcribe audio using the new connector-based architecture.
 
@@ -1931,9 +2060,29 @@ def transcribe_with_connector(app_context, recording_id, filepath, original_file
             converted_filepath = None  # Track converted file for cleanup and retry
             video_passthrough_active = is_video and VIDEO_PASSTHROUGH_ASR
 
+            # Dual-channel (stereo call) mode: caller=left, callee=right. Only
+            # applies to genuine 2-channel audio and not to video passthrough.
+            # Probe BEFORE any codec conversion, which would downmix to mono and
+            # destroy the channel separation this feature depends on.
+            dual_channel_active = False
+            if dual_channel and not video_passthrough_active:
+                try:
+                    channel_count = get_codec_info(actual_filepath, timeout=10).get('channels')
+                    dual_channel_active = (channel_count == 2)
+                    if not dual_channel_active:
+                        current_app.logger.info(
+                            f"Dual-channel requested but source has {channel_count} channel(s); using normal transcription"
+                        )
+                except FFProbeError as probe_err:
+                    current_app.logger.warning(f"Could not probe channel count, skipping dual-channel: {probe_err}")
+
             if video_passthrough_active:
                 # Skip conversion and chunking — ASR backend handles the raw video
                 current_app.logger.info(f"Video passthrough: skipping codec conversion and chunking")
+            elif dual_channel_active:
+                # Skip whole-file conversion; the stereo source is split and each
+                # channel is encoded (and chunked if needed) inside the dual path.
+                current_app.logger.info("Dual-channel mode: skipping whole-file codec conversion")
             else:
                 try:
                     # Check if chunking will be needed (affects which codecs are supported)
@@ -1984,9 +2133,10 @@ def transcribe_with_connector(app_context, recording_id, filepath, original_file
             # 3. User's CHUNK_LIMIT setting → use their settings
             # 4. Connector defaults (max_file_size, recommended_chunk_seconds)
             # 5. App default (20MB)
-            if video_passthrough_active:
+            if video_passthrough_active or dual_channel_active:
+                # Dual-channel does its own per-channel chunking inside the split path.
                 should_chunk = False
-                current_app.logger.info(f"Video passthrough: chunking skipped (ASR backend handles internally)")
+                current_app.logger.info("Whole-file chunking skipped (video passthrough or dual-channel)")
             else:
                 current_app.logger.info(f"Chunking service available: {chunking_service is not None}")
                 current_app.logger.info(f"Connector specs: max_duration={connector_specs.max_duration_seconds}s, "
@@ -2006,7 +2156,20 @@ def transcribe_with_connector(app_context, recording_id, filepath, original_file
 
             for attempt in range(max_attempts):
                 try:
-                    if should_chunk:
+                    if dual_channel_active:
+                        # Stereo call: split into caller (left) / callee (right),
+                        # transcribe each channel separately, merge by timestamp.
+                        response = transcribe_dual_channel(
+                            connector, actual_filepath, language, hotwords,
+                            initial_prompt, transcription_model, recording.participants,
+                            chunking_service, connector_specs,
+                        )
+                        recording.transcription = response.to_storage_format()
+                        current_app.logger.info(
+                            f"Dual-channel transcription completed: {len(response.segments or [])} segments, "
+                            f"speakers={response.speakers}"
+                        )
+                    elif should_chunk:
                         # Use chunking for large files
                         file_size_mb = os.path.getsize(actual_filepath) / (1024 * 1024)
                         current_app.logger.info(f"File {actual_filepath} is large ({file_size_mb:.1f}MB), using chunking for transcription")
@@ -2079,8 +2242,10 @@ def transcribe_with_connector(app_context, recording_id, filepath, original_file
                         'failed to decode audio', 'not a valid audio file',
                     ])
 
-                    # Only retry with MP3 conversion on first attempt for format errors
-                    if attempt == 0 and is_format_error and not converted_filepath:
+                    # Only retry with MP3 conversion on first attempt for format errors.
+                    # Dual-channel manages its own per-channel encoding, so a whole-file
+                    # mono MP3 retry would destroy the channel split — skip it there.
+                    if attempt == 0 and is_format_error and not converted_filepath and not dual_channel_active:
                         current_app.logger.warning(f"Transcription failed with possible format error: {e}")
                         current_app.logger.info(f"Attempting MP3 conversion and retry...")
 
@@ -2290,7 +2455,7 @@ def transcribe_with_connector(app_context, recording_id, filepath, original_file
             raise
 
 
-def transcribe_audio_task(app_context, recording_id, filepath, filename_for_asr, start_time, language=None, min_speakers=None, max_speakers=None, tag_id=None, hotwords=None, initial_prompt=None, transcription_model=None):
+def transcribe_audio_task(app_context, recording_id, filepath, filename_for_asr, start_time, language=None, min_speakers=None, max_speakers=None, tag_id=None, hotwords=None, initial_prompt=None, transcription_model=None, dual_channel=False):
     """Runs the transcription and summarization in a background thread.
 
     Uses the connector-based architecture which supports:
@@ -2340,6 +2505,7 @@ def transcribe_audio_task(app_context, recording_id, filepath, filename_for_asr,
         hotwords=hotwords,
         initial_prompt=initial_prompt,
         transcription_model=transcription_model,
+        dual_channel=dual_channel,
     )
 
     # After transcription completes, calculate processing time

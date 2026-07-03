@@ -455,6 +455,7 @@ class FairJobQueue:
                 hotwords=params.get('hotwords'),
                 initial_prompt=params.get('initial_prompt'),
                 transcription_model=params.get('transcription_model'),
+                dual_channel=params.get('dual_channel', False),
             )
 
     def _run_summarization(self, job, recording, params):
@@ -506,6 +507,7 @@ class FairJobQueue:
                 hotwords=params.get('hotwords'),
                 initial_prompt=params.get('initial_prompt'),
                 transcription_model=params.get('transcription_model'),
+                dual_channel=params.get('dual_channel', False),
             )
 
     def _run_reprocess_summary(self, job, recording, params):

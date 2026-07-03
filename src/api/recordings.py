@@ -1084,6 +1084,8 @@ def reprocess_transcription(recording_id):
         hotwords = (data.get('hotwords') or '').strip() or None
         initial_prompt = (data.get('initial_prompt') or '').strip() or None
         transcription_model = (data.get('transcription_model') or '').strip() or None
+        # Dual-channel (stereo call) mode: caller=left, callee=right channel.
+        dual_channel = bool(data.get('dual_channel', False))
 
         # Convert to int if provided
         if min_speakers:
@@ -1166,6 +1168,7 @@ def reprocess_transcription(recording_id):
             'hotwords': hotwords,
             'initial_prompt': initial_prompt,
             'transcription_model': transcription_model,
+            'dual_channel': dual_channel,
         }
 
         job_id = job_queue.enqueue(
@@ -1522,7 +1525,7 @@ def get_recordings_paginated():
         show_shared = request.args.get('shared', '').lower() == 'true'
         show_starred = request.args.get('starred', '').lower() == 'true'
         show_inbox = request.args.get('inbox', '').lower() == 'true'
-        sort_by = request.args.get('sort_by', 'created_at')  # 'created_at' or 'meeting_date'
+        sort_by = request.args.get('sort_by', 'meeting_date')  # 'meeting_date' (default) or 'created_at'
         folder_filter = request.args.get('folder', '').strip()  # folder_id or 'none' for no folder
 
         # Get all accessible recording IDs (own + shared)
@@ -2568,6 +2571,8 @@ def upload_file():
         hotwords = request.form.get('hotwords', '').strip() or None
         initial_prompt = request.form.get('initial_prompt', '').strip() or None
         transcription_model = request.form.get('transcription_model', '').strip() or None
+        # Dual-channel (stereo call) mode: caller=left, callee=right channel.
+        dual_channel = request.form.get('dual_channel', 'false').lower() == 'true'
 
         # Per-recording prompt-template variables. Sent as a JSON string from
         # the upload form so multiple values fit in a single form field. The
@@ -2758,6 +2763,7 @@ def upload_file():
             'hotwords': hotwords,
             'initial_prompt': initial_prompt,
             'transcription_model': transcription_model,
+            'dual_channel': dual_channel,
         }
 
         current_app.logger.info(f"Queueing transcription for recording {recording.id} with params: {job_params}")
@@ -4448,6 +4454,79 @@ def toggle_deletion_exempt(recording_id):
         db.session.rollback()
         current_app.logger.error(f"Error toggling deletion exempt for recording {recording_id}: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+@recordings_bp.route('/api/recordings/<int:recording_id>/sync-added-date', methods=['POST'])
+@login_required
+def sync_added_date(recording_id):
+    """Set a recording's created_at ("added" date) equal to its meeting/call date."""
+    try:
+        recording = db.session.get(Recording, recording_id)
+        if not recording:
+            return jsonify({'error': 'Recording not found'}), 404
+
+        # created_at is intrinsic to the recording (not per-user state), so only the
+        # owner (or an admin) may change it.
+        if recording.user_id != current_user.id and not current_user.is_admin:
+            return jsonify({'error': 'Permission denied'}), 403
+
+        if not recording.meeting_date:
+            return jsonify({'error': 'Recording has no meeting date to sync from'}), 400
+
+        recording.created_at = recording.meeting_date
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'created_at': recording.created_at.isoformat() if recording.created_at else None,
+            'meeting_date': recording.meeting_date.isoformat() if recording.meeting_date else None
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error syncing added date for recording {recording_id}: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@recordings_bp.route('/api/recordings/sync-added-date', methods=['POST'])
+@login_required
+def bulk_sync_added_date():
+    """Bulk-set created_at = meeting_date for the current user's recordings.
+
+    Applies to every recording owned by the user that has a meeting_date. If an
+    explicit recording_ids list is supplied, only those (still owner-scoped) are
+    updated. Recordings without a meeting_date are left untouched.
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+        recording_ids = data.get('recording_ids')
+
+        stmt = select(Recording).where(
+            Recording.user_id == current_user.id,
+            Recording.meeting_date.is_not(None)
+        )
+        if recording_ids:
+            if len(recording_ids) > 1000:
+                return jsonify({'error': 'Cannot update more than 1000 recordings at once'}), 400
+            stmt = stmt.where(Recording.id.in_(recording_ids))
+
+        recordings = db.session.execute(stmt).scalars().all()
+
+        affected_ids = []
+        for recording in recordings:
+            recording.created_at = recording.meeting_date
+            affected_ids.append(recording.id)
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'affected_ids': affected_ids,
+            'affected_count': len(affected_ids)
+        })
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error in bulk sync added date: {e}", exc_info=True)
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 
 @recordings_bp.route('/api/recording/<int:recording_id>/process_chunks', methods=['POST'])

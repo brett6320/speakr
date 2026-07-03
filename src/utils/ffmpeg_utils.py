@@ -446,3 +446,57 @@ def _run_ffmpeg_command(cmd: list, operation_description: str) -> None:
         error_msg = f"{operation_description} failed: {e.stderr}"
         current_app.logger.error(f"FFmpeg error: {error_msg}")
         raise FFmpegError(error_msg)
+
+
+def split_stereo_channels(
+    input_path: str,
+    left_path: Optional[str] = None,
+    right_path: Optional[str] = None,
+    bitrate: str = DEFAULT_MP3_BITRATE,
+    sample_rate: str = DEFAULT_SAMPLE_RATE,
+) -> Tuple[str, str]:
+    """
+    Split a stereo audio file into two separate mono MP3 files, one per channel.
+
+    Used by dual-channel transcription where the left channel is the caller and
+    the right channel is the callee. Each output is a single-channel MP3 encoded
+    directly from the matching source channel (no downmix), so the channel
+    separation is preserved regardless of the global AUDIO_CHANNELS setting.
+
+    Args:
+        input_path: Path to the stereo input file.
+        left_path: Output path for the left channel (auto-generated if None).
+        right_path: Output path for the right channel (auto-generated if None).
+        bitrate: MP3 bitrate for both outputs.
+        sample_rate: Sample rate in Hz for both outputs.
+
+    Returns:
+        (left_path, right_path) tuple of the two mono MP3 files.
+
+    Raises:
+        FFmpegNotFoundError: If FFmpeg is not installed.
+        FFmpegError: If the split fails.
+    """
+    base = os.path.splitext(input_path)[0]
+    if left_path is None:
+        left_path = f"{base}.left.mp3"
+    if right_path is None:
+        right_path = f"{base}.right.mp3"
+
+    # A single ffmpeg invocation writes both channels via two filtered outputs.
+    # pan=mono|c0=c0 keeps only the left source channel; c0=c1 keeps the right.
+    cmd = [
+        'ffmpeg',
+        '-i', input_path,
+        '-y',
+        '-filter_complex', '[0:a]pan=mono|c0=c0[left];[0:a]pan=mono|c0=c1[right]',
+        '-map', '[left]',
+        '-acodec', 'libmp3lame', '-b:a', bitrate, '-ar', sample_rate, '-ac', '1',
+        left_path,
+        '-map', '[right]',
+        '-acodec', 'libmp3lame', '-b:a', bitrate, '-ar', sample_rate, '-ac', '1',
+        right_path,
+    ]
+
+    _run_ffmpeg_command(cmd, f"Stereo channel split of {os.path.basename(input_path)}")
+    return left_path, right_path
