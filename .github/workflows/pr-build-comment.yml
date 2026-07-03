@@ -98,6 +98,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Read the publish workflow's warm cache but do NOT write cache here.
+      # A verification build doesn't need to populate the cache, and writing it
+      # would race a concurrent publish run on the same gha cache scope
+      # ("failed to reserve cache").
       - name: Build ${{ matrix.variant }}/${{ matrix.arch }} (no push)
         uses: docker/build-push-action@v6
         with:
@@ -105,7 +109,6 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: false
           cache-from: type=gha,scope=${{ matrix.variant }}-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.variant }}-${{ matrix.arch }}
           build-args: |
             PRODUCTION=1
             ${{ matrix.variant == 'lite' && 'LIGHTWEIGHT=1' || '' }}

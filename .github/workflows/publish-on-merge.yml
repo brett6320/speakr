@@ -11,6 +11,12 @@ on:
     branches: [master, main]
   workflow_dispatch:
 
+# Only one publish at a time; a newer merge cancels an in-flight publish so the
+# latest commit wins and two runs never race on the same gha cache scope.
+concurrency:
+  group: publish-on-merge
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
