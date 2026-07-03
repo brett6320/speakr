@@ -11,7 +11,7 @@ from flask import current_app
 # Configuration constants
 DEFAULT_MP3_BITRATE = os.getenv('AUDIO_BITRATE', '128k')
 DEFAULT_SAMPLE_RATE = os.getenv('AUDIO_SAMPLE_RATE', '44100')
-DEFAULT_CHANNELS = int(os.getenv('AUDIO_CHANNELS', '1'))  # Mono for speech
+DEFAULT_CHANNELS = int(os.getenv('AUDIO_CHANNELS', '2'))  # Preserve stereo by default; set AUDIO_CHANNELS=1 to downmix to mono for speech
 DEFAULT_COMPRESSION_LEVEL = int(os.getenv('AUDIO_COMPRESSION_LEVEL', '2'))
 
 
