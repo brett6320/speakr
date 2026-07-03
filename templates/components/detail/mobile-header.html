@@ -136,9 +136,13 @@
                 <span class="chip-meta__label" v-text="selectedRecording.owner_username || t('sharing.unknown')"></span>
             </span>
             <template v-if="activeRecordingMetadata" v-for="(item, index) in activeRecordingMetadata" :key="index">
-                <span v-if="!item.isTagItem" class="chip-meta" :title="item.fullText || item.text">
+                <span v-if="!item.isTagItem" class="chip-meta"
+                      :class="{ 'chip-meta--clickable': item.copyValue }"
+                      :title="item.copyValue ? t('detail.copyFilename') : (item.fullText || item.text)"
+                      @click="item.copyValue && copyMetaValue(item.copyValue)">
                     <i :class="item.icon"></i>
                     <span class="chip-meta__label" v-text="item.text"></span>
+                    <i v-if="item.copyValue" class="fas fa-copy text-[10px] text-[var(--text-muted)]"></i>
                 </span>
             </template>
             <button v-if="selectedRecording.duplicate_info"

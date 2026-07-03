@@ -2695,12 +2695,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                     metadata.push({
                         icon: 'fas fa-file',
                         text: truncated,
-                        fullText: recording.original_filename
+                        fullText: recording.original_filename,
+                        // Click the filename chip to copy the full filename.
+                        copyValue: recording.original_filename
                     });
                 }
 
                 return metadata;
             });
+
+            // Copy a metadata chip's value (currently the filename) to the clipboard.
+            const copyMetaValue = (value) => {
+                if (!value) return;
+                navigator.clipboard.writeText(value).then(() => {
+                    showToast(t('detail.filenameCopied'), 'fa-check-circle', 2500, 'success');
+                }).catch(() => {
+                    setGlobalError('Failed to copy to clipboard');
+                });
+            };
 
             // Upload queue computed properties
             const totalInQueue = computed(() => uploadQueue.value.length);
@@ -3968,6 +3980,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 datePresetOptions,
                 languageOptions,
                 activeRecordingMetadata,
+                copyMetaValue,
                 totalInQueue,
                 completedInQueue,
                 finishedFilesInQueue,

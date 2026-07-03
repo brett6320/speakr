@@ -1641,6 +1641,8 @@
     "savedTemplateHelp": "Rellena el prompt inicial y las palabras clave a continuación."
   },
   "detail": {
+    "copyFilename": "Copiar nombre de archivo",
+    "filenameCopied": "Nombre de archivo copiado",
     "hints": "Indicaciones",
     "hintsUsed": "Indicaciones de transcripción usadas en esta grabación",
     "syncAddedDate": "Sincronizar fecha",

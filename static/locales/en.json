@@ -1650,6 +1650,8 @@
     "savedTemplateHelp": "Fills the initial prompt and hotwords below."
   },
   "detail": {
+    "copyFilename": "Copy filename",
+    "filenameCopied": "Filename copied",
     "hints": "Hints",
     "hintsUsed": "Transcription hints used for this recording",
     "syncAddedDate": "Sync date",

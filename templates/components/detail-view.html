@@ -117,9 +117,13 @@
 
             <!-- File metadata facts -->
             <span v-for="(item, index) in (activeRecordingMetadata || [])" :key="`meta-${index}`"
-                  class="chip-meta" :title="item.fullText || item.text">
+                  class="chip-meta"
+                  :class="{ 'chip-meta--clickable': item.copyValue }"
+                  :title="item.copyValue ? t('detail.copyFilename') : (item.fullText || item.text)"
+                  @click="item.copyValue && copyMetaValue(item.copyValue)">
                 <i :class="item.icon"></i>
                 <span class="chip-meta__label">${item.text}</span>
+                <i v-if="item.copyValue" class="fas fa-copy text-[10px] text-[var(--text-muted)]"></i>
             </span>
 
             <!-- Duplicate indicator -->

@@ -1641,6 +1641,8 @@
     "savedTemplateHelp": "Remplit le prompt initial et les mots-clés ci-dessous."
   },
   "detail": {
+    "copyFilename": "Copier le nom du fichier",
+    "filenameCopied": "Nom du fichier copié",
     "hints": "Indices",
     "hintsUsed": "Indices de transcription utilisés pour cet enregistrement",
     "syncAddedDate": "Synchroniser la date",

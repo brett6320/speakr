@@ -1641,6 +1641,8 @@
     "savedTemplateHelp": "填充下方的初始提示和热词。"
   },
   "detail": {
+    "copyFilename": "复制文件名",
+    "filenameCopied": "文件名已复制",
     "hints": "提示",
     "hintsUsed": "本次录音使用的转录提示",
     "syncAddedDate": "同步日期",
