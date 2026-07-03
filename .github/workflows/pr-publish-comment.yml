@@ -2,14 +2,17 @@ name: Publish preview image on PR comment
 
 # On-demand PREVIEW publish for a pull request: comment "/publish" and this
 # builds the full and lite images (native per-arch) and pushes them to GHCR
-# under commit-hash tags — WITHOUT touching `latest`/`lite`. Lets you pull and
-# run a specific PR build before merging:
+# under commit-hash tags — WITHOUT touching `latest`. Full goes to the `<repo>`
+# package, lite to the separate `<repo>-lite` package. Lets you pull and run a
+# specific PR build before merging:
 #   docker pull ghcr.io/<owner>/<repo>:sha-<shorthash>
+#   docker pull ghcr.io/<owner>/<repo>-lite:sha-<shorthash>
 # The `latest` tag only moves on a real merge to master (publish-on-merge).
 #
-# Tags applied (full / lite):
-#   sha-<shorthash>            sha-<shorthash>-lite   (immutable, per PR head commit)
-#   pr-<number>                pr-<number>-lite       (moves to the latest /publish on this PR)
+# Tags applied (same on both packages, no -lite suffix — the package name
+# distinguishes them):
+#   sha-<shorthash>   (immutable, per PR head commit)
+#   pr-<number>       (moves to the latest /publish on this PR)
 #
 # Note: issue_comment workflows run from the DEFAULT branch, so this file must
 # be on master before "/publish" does anything.
@@ -115,7 +118,7 @@ jobs:
         with:
           context: .
           platforms: ${{ matrix.platform }}
-          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.variant == 'lite' && '-lite' || '' }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha,scope=${{ matrix.variant }}-${{ matrix.arch }}
           build-args: |
             PRODUCTION=1
@@ -169,21 +172,21 @@ jobs:
       - name: Create preview manifest (sha + pr tags only)
         working-directory: ${{ runner.temp }}/digests
         env:
-          IMG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # Lite publishes to the separate …/speakr-lite package, so its tags
+          # need no `-lite` suffix — the package name distinguishes them.
+          IMG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.variant == 'lite' && '-lite' || '' }}
           SHORT: ${{ needs.start.outputs.short_sha }}
           PRNUM: ${{ github.event.issue.number }}
           VARIANT: ${{ matrix.variant }}
           TEMP: ${{ runner.temp }}
         run: |
-          suffix=""
-          if [ "$VARIANT" = "lite" ]; then suffix="-lite"; fi
           docker buildx imagetools create \
-            -t "${IMG}:sha-${SHORT}${suffix}" \
-            -t "${IMG}:pr-${PRNUM}${suffix}" \
+            -t "${IMG}:sha-${SHORT}" \
+            -t "${IMG}:pr-${PRNUM}" \
             $(printf "${IMG}@sha256:%s " *)
           # Capture the published multi-arch manifest digest (the image content
           # hash) so the report step can post it to the PR for exact pinning.
-          digest=$(docker buildx imagetools inspect "${IMG}:sha-${SHORT}${suffix}" --format '{{.Manifest.Digest}}')
+          digest=$(docker buildx imagetools inspect "${IMG}:sha-${SHORT}" --format '{{.Manifest.Digest}}')
           echo "Manifest digest for ${VARIANT}: ${digest}"
           mkdir -p "${TEMP}/manifest"
           printf '%s' "${digest}" > "${TEMP}/manifest/${VARIANT}"
@@ -222,6 +225,7 @@ jobs:
             const sha = '${{ needs.start.outputs.sha }}';
             const short = '${{ needs.start.outputs.short_sha }}';
             const img = '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}';
+            const liteImg = `${img}-lite`;
             const pr = context.issue.number;
             const readDigest = (v) => { try { return fs.readFileSync(`manifests/${v}`, 'utf8').trim(); } catch (e) { return null; } };
             const fullDigest = readDigest('full');
@@ -244,18 +248,19 @@ jobs:
               const lines = [
                 `✅ **Preview images published** — \`latest\`/\`lite\` are **not** touched (they only move on merge to master/main).`,
                 '',
-                '| Image | Tag | Digest (image content hash) |',
+                '| Package | Tag | Digest (image content hash) |',
                 '| --- | --- | --- |',
-                `| full | \`${img}:sha-${short}\` | \`${fullDigest || 'n/a'}\` |`,
-                `| lite | \`${img}:sha-${short}-lite\` | \`${liteDigest || 'n/a'}\` |`,
+                `| \`${img}\` (full) | \`sha-${short}\` | \`${fullDigest || 'n/a'}\` |`,
+                `| \`${liteImg}\` (lite) | \`sha-${short}\` | \`${liteDigest || 'n/a'}\` |`,
                 '',
                 'Pull by tag, or pin the exact build by digest:',
                 '```',
                 `docker pull ${img}:sha-${short}`,
+                `docker pull ${liteImg}:sha-${short}`,
               ];
               if (fullDigest) lines.push(`docker pull ${img}@${fullDigest}   # full, immutable`);
-              if (liteDigest) lines.push(`docker pull ${img}@${liteDigest}   # lite, immutable`);
-              lines.push('```', '', `Also tagged \`${img}:pr-${pr}\` (moves to the newest \`/publish\` on this PR). [Logs](${runUrl})`);
+              if (liteDigest) lines.push(`docker pull ${liteImg}@${liteDigest}   # lite, immutable`);
+              lines.push('```', '', `Also tagged \`${img}:pr-${pr}\` / \`${liteImg}:pr-${pr}\` (move to the newest \`/publish\` on this PR). [Logs](${runUrl})`);
               body = lines.join('\n');
             } else {
               body = `❌ \`/publish\` failed — [see the run](${runUrl}).`;
