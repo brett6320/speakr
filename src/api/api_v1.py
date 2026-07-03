@@ -19,7 +19,7 @@ import json
 from datetime import datetime, date, timedelta
 from typing import Optional
 
-from flask import Blueprint, jsonify, request, current_app, send_file, redirect
+from flask import Blueprint, jsonify, request, current_app, send_file, redirect, g
 from flask_login import login_required, current_user
 from sqlalchemy import func, extract, or_, and_
 
@@ -331,7 +331,8 @@ OPENAPI_SPEC = {
                                     "tag_id": {"type": "integer"},
                                     "tag_ids[0]": {"type": "integer"},
                                     "tag_ids[1]": {"type": "integer"},
-                                    "keep_audio_only": {"type": "boolean", "description": "If true, the server discards the video stream and stores only the extracted audio. Allows uploads up to max_audio_only_video_size_mb (vs max_file_size_mb) for video files, as long as the extracted audio still fits the regular limit."}
+                                    "keep_audio_only": {"type": "boolean", "description": "If true, the server discards the video stream and stores only the extracted audio. Allows uploads up to max_audio_only_video_size_mb (vs max_file_size_mb) for video files, as long as the extracted audio still fits the regular limit."},
+                                    "dual_channel": {"type": "boolean", "description": "Dual-channel (stereo call) transcription: left channel = caller, right = callee, mapped to the first two participants. Defaults to TRUE for API uploads; pass false to force normal transcription. Mono files fall back to normal transcription automatically."}
                                 }
                             }
                         }
@@ -2832,5 +2833,12 @@ def upload_recording():
       - folder_id (optional)
       - tag_ids[0], tag_ids[1], ... (optional)
       - tag_id (optional, legacy)
+      - dual_channel (optional): "true"/"false". Defaults to TRUE for API
+        uploads (stereo call recordings map left=caller / right=callee). Pass
+        "false" to force normal transcription. Mono files fall back to normal
+        transcription automatically.
     """
+    # Default dual-channel ON for API uploads (backward compatible: an explicit
+    # dual_channel field still overrides, and mono sources auto-fall back).
+    g.dual_channel_default = True
     return _upload_file_ui()

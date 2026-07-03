@@ -13,7 +13,7 @@ import threading
 import subprocess
 from datetime import datetime, timedelta
 from src.services.job_queue import job_queue
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, Response, current_app, make_response
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, Response, current_app, make_response, g
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import RequestEntityTooLarge
@@ -2572,7 +2572,12 @@ def upload_file():
         initial_prompt = request.form.get('initial_prompt', '').strip() or None
         transcription_model = request.form.get('transcription_model', '').strip() or None
         # Dual-channel (stereo call) mode: caller=left, callee=right channel.
-        dual_channel = request.form.get('dual_channel', 'false').lower() == 'true'
+        # API uploads default this ON (stereo call recordings), the web UI OFF;
+        # an explicit `dual_channel` form field always overrides either default,
+        # so existing API clients that set it keep their behaviour. Mono sources
+        # auto-fall back to normal transcription regardless.
+        dual_channel_default = 'true' if getattr(g, 'dual_channel_default', False) else 'false'
+        dual_channel = request.form.get('dual_channel', dual_channel_default).lower() == 'true'
 
         # Per-recording prompt-template variables. Sent as a JSON string from
         # the upload form so multiple values fit in a single form field. The
