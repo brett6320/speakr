@@ -89,6 +89,17 @@
                             <option v-for="opt in transcriptionModelOptions" :key="opt.value" :value="opt.value" v-text="opt.label || opt.value"></option>
                         </select>
                     </div>
+
+                    <!-- Dual-channel (stereo call): caller=left, callee=right channel. -->
+                    <div>
+                        <label class="flex items-start gap-2 cursor-pointer">
+                            <input type="checkbox" v-model="asrReprocessOptions.dual_channel" class="mt-0.5 accent-[var(--text-accent)]">
+                            <span class="min-w-0">
+                                <span class="block text-sm font-medium text-[var(--text-muted)]" v-text="t('form.dualChannel')"></span>
+                                <span class="block text-xs text-[var(--text-muted)] mt-0.5" v-text="t('form.dualChannelHelp')"></span>
+                            </span>
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Prompt Template Variables -->

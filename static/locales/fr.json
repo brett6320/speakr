@@ -818,6 +818,8 @@
     "createFolderTitle": "Créer un dossier"
   },
   "form": {
+    "dualChannel": "Double canal (appel stéréo)",
+    "dualChannelHelp": "Transcrit chaque canal stéréo séparément : gauche = appelant, droite = appelé, associés aux deux premiers participants.",
     "auto": "Auto",
     "autoDetect": "Détection automatique",
     "dateFrom": "De",
@@ -1640,7 +1642,9 @@
   },
   "detail": {
     "hints": "Indices",
-    "hintsUsed": "Indices de transcription utilisés pour cet enregistrement"
+    "hintsUsed": "Indices de transcription utilisés pour cet enregistrement",
+    "syncAddedDate": "Synchroniser la date",
+    "syncAddedToMeeting": "Définir la date d'ajout sur la date de la réunion/de l'appel"
   },
   "timestamps": {
     "title": "Disponibilité des horodatages de transcription",

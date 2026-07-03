@@ -818,6 +818,8 @@
     "createFolderTitle": "Criar pasta"
   },
   "form": {
+    "dualChannel": "Canal duplo (chamada estéreo)",
+    "dualChannelHelp": "Transcreve cada canal estéreo separadamente: esquerda = quem liga, direita = quem recebe, mapeados para os dois primeiros participantes.",
     "auto": "Automático",
     "autoDetect": "Detecção Automática",
     "dateFrom": "De",
@@ -1640,7 +1642,9 @@
   },
   "detail": {
     "hints": "Dicas",
-    "hintsUsed": "Dicas de transcrição usadas nesta gravação"
+    "hintsUsed": "Dicas de transcrição usadas nesta gravação",
+    "syncAddedDate": "Sincronizar data",
+    "syncAddedToMeeting": "Definir a data de adição como a data da reunião/chamada"
   },
   "timestamps": {
     "title": "Disponibilidade de marcações de tempo na transcrição",

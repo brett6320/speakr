@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const _savedSortBy = localStorage.getItem('recordingsSortBy');
             const sortBy = ref((_savedSortBy === 'meeting_date' || _savedSortBy === 'created_at')
                 ? _savedSortBy
-                : 'created_at');
+                : 'meeting_date');
             const selectedTagFilter = ref(null);
 
             // --- UI State ---
@@ -523,6 +523,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const uploadMaxSpeakers = ref('');
             const uploadHotwords = ref('');
             const uploadInitialPrompt = ref('');
+            // Dual-channel (stereo call) transcription: left channel = caller,
+            // right channel = callee, mapped to the first two participants.
+            const uploadDualChannel = ref(false);
             // Saved transcription initial-prompt templates (#309), shown as a
             // picker above the initial-prompt field in the upload modal.
             const initialPromptTemplates = ref([]);
@@ -629,7 +632,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const asrReprocessOptions = reactive({
                 language: '',
                 min_speakers: null,
-                max_speakers: null
+                max_speakers: null,
+                dual_channel: false
             });
             const summaryReprocessPromptSource = ref('default');
             const summaryReprocessSelectedTagId = ref('');
@@ -1595,7 +1599,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 maxConcurrentUploads, recordingDisclaimer, showRecordingDisclaimerModal, pendingRecordingMode,
                 uploadDisclaimer, showUploadDisclaimerModal,
                 customBanner, showBanner,
-                showAdvancedOptions, userTranscriptionLanguage, uploadLanguage, uploadMinSpeakers, uploadMaxSpeakers, uploadHotwords, uploadInitialPrompt, initialPromptTemplates, applyInitialPromptTemplate, showHintsPopover, uploadTranscriptionModel, uploadPromptVariables, showPromptVariablesPanel, selectedPromptVariables, reprocessAvailableVariables, transcriptionModelOptions,
+                showAdvancedOptions, userTranscriptionLanguage, uploadLanguage, uploadMinSpeakers, uploadMaxSpeakers, uploadHotwords, uploadInitialPrompt, uploadDualChannel, initialPromptTemplates, applyInitialPromptTemplate, showHintsPopover, uploadTranscriptionModel, uploadPromptVariables, showPromptVariablesPanel, selectedPromptVariables, reprocessAvailableVariables, transcriptionModelOptions,
                 availableTags, selectedTagIds, uploadTagSearchFilter,
                 availableFolders, selectedFolderId, foldersEnabled, filterFolder,
 

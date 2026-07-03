@@ -743,6 +743,19 @@
                         </div>
                     </div>
 
+                    <!-- Dual-channel (stereo call): left channel = caller, right = callee,
+                         mapped to the first two participants. -->
+                    <div class="rounded-md border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-3">
+                        <label class="flex items-start gap-2 cursor-pointer">
+                            <input v-model="uploadDualChannel" type="checkbox"
+                                   class="mt-0.5 accent-[var(--text-accent)]">
+                            <span class="min-w-0">
+                                <span class="block text-xs font-medium text-[var(--text-secondary)]" v-text="t('form.dualChannel')"></span>
+                                <span class="block text-[10px] text-[var(--text-muted)] mt-0.5" v-text="t('form.dualChannelHelp')"></span>
+                            </span>
+                        </label>
+                    </div>
+
                     <!-- Transcription Model (issue #266 — visible only when admin set TRANSCRIPTION_MODELS_AVAILABLE).
                          Only when there are at least 2 visible models. -->
                     <div v-if="transcriptionModelOptions && transcriptionModelOptions.length > 1">

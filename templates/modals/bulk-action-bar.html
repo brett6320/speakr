@@ -57,6 +57,13 @@
                         <span>Redo</span>
                     </button>
 
+                    <button @click="bulkSyncAddedDate()"
+                            class="flex-1 px-2 py-1.5 text-xs bg-[var(--bg-tertiary)] hover:bg-[var(--bg-input)] rounded-md transition-colors flex items-center justify-center gap-1"
+                            title="Set added date to meeting/call date">
+                        <i class="fas fa-calendar-check text-[var(--text-muted)]"></i>
+                        <span>Dates</span>
+                    </button>
+
                     <button @click="openBulkDeleteModal"
                             class="flex-1 px-2 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors flex items-center justify-center gap-1"
                             title="Delete selected">

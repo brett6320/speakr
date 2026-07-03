@@ -818,6 +818,8 @@
     "createFolderTitle": "Crear carpeta"
   },
   "form": {
+    "dualChannel": "Doble canal (llamada estéreo)",
+    "dualChannelHelp": "Transcribe cada canal estéreo por separado: izquierda = emisor, derecha = receptor, asignados a los dos primeros participantes.",
     "auto": "Auto",
     "autoDetect": "Detección automática",
     "dateFrom": "Desde",
@@ -1640,7 +1642,9 @@
   },
   "detail": {
     "hints": "Indicaciones",
-    "hintsUsed": "Indicaciones de transcripción usadas en esta grabación"
+    "hintsUsed": "Indicaciones de transcripción usadas en esta grabación",
+    "syncAddedDate": "Sincronizar fecha",
+    "syncAddedToMeeting": "Establecer la fecha de adición como la fecha de la reunión/llamada"
   },
   "timestamps": {
     "title": "Disponibilidad de marcas de tiempo en la transcripción",

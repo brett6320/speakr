@@ -106,6 +106,15 @@
                 <span class="chip-meta__label">${selectedRecording.meeting_date ? formatDisplayDate(selectedRecording.meeting_date, true) : 'No date set'}</span>
             </span>
 
+            <!-- Sync "added" date to the meeting/call date -->
+            <button v-if="selectedRecording.meeting_date"
+                    @click="syncAddedDate(selectedRecording.id)"
+                    class="chip-meta chip-meta--clickable"
+                    :title="t('detail.syncAddedToMeeting')">
+                <i class="fas fa-calendar-check"></i>
+                <span class="chip-meta__label" v-text="t('detail.syncAddedDate')"></span>
+            </button>
+
             <!-- File metadata facts -->
             <span v-for="(item, index) in (activeRecordingMetadata || [])" :key="`meta-${index}`"
                   class="chip-meta" :title="item.fullText || item.text">

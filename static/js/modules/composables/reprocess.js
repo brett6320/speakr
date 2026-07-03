@@ -137,7 +137,8 @@ export function useReprocess(state, utils) {
                 asrReprocessOptions.max_speakers,
                 asrReprocessOptions.hotwords,
                 asrReprocessOptions.initial_prompt,
-                asrReprocessOptions.transcription_model
+                asrReprocessOptions.transcription_model,
+                asrReprocessOptions.dual_channel
             );
         } else {
             await reprocessSummary(
@@ -155,7 +156,7 @@ export function useReprocess(state, utils) {
     // Transcription Reprocessing
     // =========================================
 
-    const reprocessTranscription = async (recordingId, language, minSpeakers, maxSpeakers, hotwords, initialPrompt, transcriptionModel) => {
+    const reprocessTranscription = async (recordingId, language, minSpeakers, maxSpeakers, hotwords, initialPrompt, transcriptionModel, dualChannel) => {
         if (!recordingId) {
             setGlobalError('No recording ID provided for reprocessing.');
             return;
@@ -171,6 +172,7 @@ export function useReprocess(state, utils) {
             if (hotwords && hotwords.trim()) requestBody.hotwords = hotwords.trim();
             if (initialPrompt && initialPrompt.trim()) requestBody.initial_prompt = initialPrompt.trim();
             if (transcriptionModel && transcriptionModel.trim()) requestBody.transcription_model = transcriptionModel.trim();
+            if (dualChannel) requestBody.dual_channel = true;
 
             const response = await fetch(`/recording/${recordingId}/reprocess_transcription`, {
                 method: 'POST',

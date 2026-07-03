@@ -818,6 +818,8 @@
     "createFolderTitle": "创建文件夹"
   },
   "form": {
+    "dualChannel": "双声道（立体声通话）",
+    "dualChannelHelp": "分别转录每个立体声声道：左=主叫，右=被叫，映射到前两位参与者。",
     "auto": "自动",
     "autoDetect": "自动检测",
     "dateFrom": "从",
@@ -1640,7 +1642,9 @@
   },
   "detail": {
     "hints": "提示",
-    "hintsUsed": "本次录音使用的转录提示"
+    "hintsUsed": "本次录音使用的转录提示",
+    "syncAddedDate": "同步日期",
+    "syncAddedToMeeting": "将添加日期设为会议/通话日期"
   },
   "timestamps": {
     "title": "转录时间戳可用性",

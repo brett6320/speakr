@@ -818,6 +818,8 @@
     "createFolderTitle": "Ordner erstellen"
   },
   "form": {
+    "dualChannel": "Zweikanal (Stereo-Anruf)",
+    "dualChannelHelp": "Transkribiert jeden Stereokanal separat: links = Anrufer, rechts = Angerufener, zugeordnet zu den ersten beiden Teilnehmern.",
     "auto": "Auto",
     "autoDetect": "Automatisch erkennen",
     "dateFrom": "Von",
@@ -1640,7 +1642,9 @@
   },
   "detail": {
     "hints": "Hinweise",
-    "hintsUsed": "Für diese Aufnahme verwendete Transkriptionshinweise"
+    "hintsUsed": "Für diese Aufnahme verwendete Transkriptionshinweise",
+    "syncAddedDate": "Datum angleichen",
+    "syncAddedToMeeting": "Hinzugefügt-Datum auf Meeting-/Anrufdatum setzen"
   },
   "timestamps": {
     "title": "Verfügbarkeit von Transkript-Zeitstempeln",

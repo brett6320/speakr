@@ -818,6 +818,8 @@
     "createFolderTitle": "Create Folder"
   },
   "form": {
+    "dualChannel": "Dual-channel (stereo call)",
+    "dualChannelHelp": "Transcribe each stereo channel separately: left = caller, right = callee, mapped to the first two participants.",
     "auto": "Auto",
     "autoDetect": "Auto-detect",
     "dateFrom": "From",
@@ -1649,7 +1651,9 @@
   },
   "detail": {
     "hints": "Hints",
-    "hintsUsed": "Transcription hints used for this recording"
+    "hintsUsed": "Transcription hints used for this recording",
+    "syncAddedDate": "Sync date",
+    "syncAddedToMeeting": "Set added date to meeting/call date"
   },
   "timestamps": {
     "title": "Transcript Timestamp Availability",
