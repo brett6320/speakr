@@ -200,6 +200,7 @@ Upload a recording as multipart form-data and immediately queue transcription.
 | `tag_ids[0]`, `tag_ids[1]`, ... | integer | no | Tag IDs (multi) |
 | `tag_id` | integer | no | Single tag ID (legacy) |
 | `keep_audio_only` | boolean | no | If `true`, the server discards the video stream and stores only the extracted audio. Lets you upload videos larger than `max_file_size_mb`, up to `max_audio_only_video_size_mb`, as long as the extracted audio fits the regular limit. When `VIDEO_RETENTION` is off at the server, this is implicit for video uploads. |
+| `dual_channel` | boolean | no | Dual-channel (stereo call) transcription: left channel = caller, right channel = callee, mapped to the first two participants. **Defaults to `true` for API uploads** (pass `false` to force normal transcription). Mono files automatically fall back to normal transcription. |
 
 **Response:**
 
