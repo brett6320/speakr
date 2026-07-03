@@ -1,8 +1,13 @@
 name: Build image on PR comment
 
 # On-demand Docker build for a pull request: comment "/build" on the PR and this
-# builds the full and lite images for linux/amd64 + linux/arm64 WITHOUT publishing.
-# It verifies the Dockerfile still builds (PRs otherwise only run the test suite).
+# builds the full and lite images WITHOUT publishing, to verify the Dockerfile
+# still builds (PRs otherwise only run the test suite). Each architecture builds
+# on its own NATIVE runner (no QEMU emulation).
+#
+# Visibility: a 🚀 reaction marks the start and a commit status on the PR head
+# ("PR image build (amd64+arm64)") tracks the result in the PR's checks list.
+#
 # Note: issue_comment workflows always run from the DEFAULT branch, so this file
 # must be on master before "/build" does anything.
 on:
@@ -14,23 +19,21 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
-    # Only react to "/build" comments on a pull request, and only from users with
-    # write access (owner / org member / collaborator) to prevent drive-by builds.
+  # Gate on an authorized "/build" comment, react, and publish a pending status.
+  start:
     if: >-
       github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/build') &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       pull-requests: write
-      # Post a commit status on the PR head so the build shows in the PR's
-      # checks list (issue_comment runs are otherwise not linked to the PR).
       statuses: write
-
+    outputs:
+      sha: ${{ steps.pending.outputs.sha }}
     steps:
-      - name: Acknowledge and mark build pending
+      - name: React and mark build pending
+        id: pending
         uses: actions/github-script@v7
         with:
           script: |
@@ -42,14 +45,14 @@ jobs:
               comment_id: context.payload.comment.id,
               content: 'rocket'
             });
-            // Resolve the PR head SHA and publish a pending commit status against
-            // it, which surfaces the build in the PR's checks section.
+            // Resolve the PR head SHA and publish a pending commit status so the
+            // build tracks in the PR's checks list next to the test runners.
             const pr = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.issue.number
             });
-            core.exportVariable('PR_HEAD_SHA', pr.data.head.sha);
+            core.setOutput('sha', pr.data.head.sha);
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -57,61 +60,72 @@ jobs:
               state: 'pending',
               context: 'PR image build (amd64+arm64)',
               target_url: runUrl,
-              description: 'Building full + lite images…'
+              description: 'Building full + lite on native runners…'
             });
 
-      # Free up disk space on the runner (~30GB) for the multi-arch build
+  # Build each architecture natively (no push). 4 parallel jobs.
+  build:
+    needs: start
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [full, lite]
+        arch: [amd64, arm64]
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+            platform: linux/amd64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
+
+    steps:
       - name: Free disk space
         run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache
-          sudo docker image prune -af
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache || true
+          sudo docker image prune -af || true
           df -h /
 
-      # Build the post-merge state of the PR (refs/pull/N/merge), which is what
-      # merging would actually produce.
+      # Build the post-merge state of the PR (refs/pull/N/merge).
       - name: Checkout PR merge ref
         uses: actions/checkout@v5
         with:
           ref: refs/pull/${{ github.event.issue.number }}/merge
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build full image (no push)
+      - name: Build ${{ matrix.variant }}/${{ matrix.arch }} (no push)
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}
           push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.variant }}-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.variant }}-${{ matrix.arch }}
           build-args: |
             PRODUCTION=1
+            ${{ matrix.variant == 'lite' && 'LIGHTWEIGHT=1' || '' }}
 
-      - name: Build lite image (no push)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            PRODUCTION=1
-            LIGHTWEIGHT=1
-
+  # Aggregate the matrix result into one commit status + comment.
+  report:
+    needs: [start, build]
+    if: ${{ always() && needs.start.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      statuses: write
+    steps:
       - name: Report result
-        if: always()
         uses: actions/github-script@v7
         with:
           script: |
-            const ok = '${{ job.status }}' === 'success';
+            const ok = '${{ needs.build.result }}' === 'success';
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            // Update the PR-head commit status so the checks list reflects the result.
-            const sha = process.env.PR_HEAD_SHA;
+            const sha = '${{ needs.start.outputs.sha }}';
             if (sha) {
               await github.rest.repos.createCommitStatus({
                 owner: context.repo.owner,
@@ -124,7 +138,7 @@ jobs:
               });
             }
             const body = ok
-              ? `✅ \`/build\` succeeded — full + lite images build for linux/amd64 and linux/arm64 (not published). [Logs](${runUrl})`
+              ? `✅ \`/build\` succeeded — full + lite images build natively for linux/amd64 and linux/arm64 (not published). [Logs](${runUrl})`
               : `❌ \`/build\` failed — [see the run](${runUrl}).`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
